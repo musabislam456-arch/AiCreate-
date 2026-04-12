@@ -1,6 +1,6 @@
 {
-  "name": "Remix: CreatorAI",
-  "description": "A complete, production-ready AI tools website for content creators.",
+  "name": "CreatorAI",
+  "description": "CreatorAI – All-in-One Free AI Tools for Creators. Use powerful AI tools for writing, coding, images and more. Fast, free and easy to use.",
   "requestFramePermissions": [
     "microphone"
   ]

@@ -6,7 +6,9 @@ import { useAppStore } from '../lib/store';
 import { Button } from '../components/ui/button';
 import { Textarea } from '../components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Loader2, Copy, CheckCircle2, Upload, X, Video, ArrowLeft, BarChart2, Users, Eye, Globe, DollarSign, Trophy, Cpu, Volume2 } from 'lucide-react';
+import { Loader2, Copy, CheckCircle2, Upload, X, Video, ArrowLeft, BarChart2, Users, Eye, Globe, DollarSign, Trophy, Cpu, Volume2, Plus, Bot } from 'lucide-react';
+import { Badge } from '../components/ui/badge';
+import { cn } from '../lib/utils';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import { Input } from '../components/ui/input';
@@ -69,6 +71,20 @@ export function AdvancedToolPage() {
   if (!tool) {
     return <Navigate to="/" replace />;
   }
+
+  const ToolIcon = tool.icon;
+
+  const getToolColor = () => {
+    switch (tool.id) {
+      case 'advanced-script-writer': return 'bg-blue-500/10 text-blue-500';
+      case 'channel-analyzer': return 'bg-red-500/10 text-red-500';
+      case 'thumbnail-ab-testing': return 'bg-purple-500/10 text-purple-500';
+      case 'competitor-analysis': return 'bg-orange-500/10 text-orange-500';
+      case 'script-to-visuals': return 'bg-emerald-500/10 text-emerald-500';
+      case 'metadata-generator': return 'bg-cyan-500/10 text-cyan-500';
+      default: return 'bg-primary/10 text-primary';
+    }
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -464,413 +480,272 @@ export function AdvancedToolPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-12 max-w-5xl">
-      <Button variant="ghost" onClick={() => navigate(-1)} className="mb-4 -ml-4 text-muted-foreground">
+    <div className="container mx-auto px-4 py-12 max-w-6xl">
+      <Button variant="ghost" onClick={() => navigate(-1)} className="mb-8 -ml-4 text-muted-foreground hover:text-primary">
         <ArrowLeft className="w-4 h-4 mr-2" />
-        Back
+        Back to Dashboard
       </Button>
-      <div className="mb-8">
-        <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary/10 text-primary mb-4">
-          PRO Feature
+
+      <div className="flex flex-col md:flex-row md:items-center gap-6 mb-12">
+        <div className={cn("h-20 w-20 rounded-3xl flex items-center justify-center shadow-inner", getToolColor())}>
+          <ToolIcon className="h-10 w-10" />
         </div>
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">{tool.title}</h1>
-        <p className="text-muted-foreground text-lg">{tool.description}</p>
+        <div>
+          <div className="flex items-center gap-3 mb-2">
+            <h1 className="text-4xl font-black tracking-tight uppercase">{tool.title}</h1>
+            <Badge variant="default" className="rounded-full bg-primary text-primary-foreground">PRO FEATURE</Badge>
+          </div>
+          <p className="text-muted-foreground text-xl max-w-2xl">{tool.description}</p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
-        {/* Input Section */}
-        <Card className="shadow-sm">
-          <CardHeader>
-            <CardTitle>Input</CardTitle>
-            <CardDescription>Provide the necessary context</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {tool.supportsLanguage && tool.id !== 'script-to-visuals' && (
-                <div className="space-y-2">
-                  <Label>Output Language</Label>
-                  <Select value={language} onValueChange={setLanguage}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Language" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {LANGUAGES.map(lang => (
-                        <SelectItem key={lang} value={lang}>{lang}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-              <ModelSelector value={selectedAIModel} onChange={setSelectedAIModel} />
-            </div>
-
-
-            {tool.id === 'script-to-visuals' && (
-              <>
-                <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
+        <div className="lg:col-span-5 space-y-6">
+          <Card className="shadow-xl border-none bg-card/50 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Cpu className="w-5 h-5 text-primary" />
+                Configuration
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 gap-4">
+                {tool.supportsLanguage && tool.id !== 'script-to-visuals' && (
                   <div className="space-y-2">
-                    <Label>Prompt Language</Label>
-                    <Select value={promptLanguage} onValueChange={setPromptLanguage}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Prompt Language" />
+                    <Label className="text-sm font-bold">Output Language</Label>
+                    <Select value={language} onValueChange={setLanguage}>
+                      <SelectTrigger className="rounded-xl">
+                        <SelectValue placeholder="Select Language" />
                       </SelectTrigger>
                       <SelectContent>
                         {LANGUAGES.map(lang => (
-                          <SelectItem key={`p-${lang}`} value={lang}>{lang}</SelectItem>
+                          <SelectItem key={lang} value={lang}>{lang}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Voiceover Language</Label>
-                    <Select value={voiceoverLanguage} onValueChange={setVoiceoverLanguage}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Voiceover Language" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {LANGUAGES.map(lang => (
-                          <SelectItem key={`v-${lang}`} value={lang}>{lang}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label>Visual Duration per Scene</Label>
-                  <Select value={visualDuration} onValueChange={setVisualDuration}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Duration" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="3s">3 seconds</SelectItem>
-                      <SelectItem value="4s">4 seconds</SelectItem>
-                      <SelectItem value="5s">5 seconds</SelectItem>
-                      <SelectItem value="6s">6 seconds</SelectItem>
-                      <SelectItem value="8s">8 seconds</SelectItem>
-                      <SelectItem value="custom">Custom</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {visualDuration === 'custom' && (
-                    <div className="flex gap-2 mt-2">
-                      <Input 
-                        placeholder="E.g., 10s or 2 minutes" 
-                        value={customDuration}
-                        onChange={(e) => setCustomDuration(e.target.value)}
-                      />
-                      <MicButton onTranscript={(text) => setCustomDuration(prev => prev + (prev ? ' ' : '') + text)} />
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-
-            {tool.id === 'advanced-script-writer' && (
-              <>
-                <div className="space-y-2">
-                  <Label>Script Format</Label>
-                  <Select value={scriptFormat} onValueChange={(v: any) => setScriptFormat(v)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Format" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Full">Full Details (Headings, Visuals, Timestamps)</SelectItem>
-                      <SelectItem value="Paragraph">Single Paragraph (Continuous Narrative)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Generation Mode</Label>
-                  <Select value={generationMode} onValueChange={(v: any) => setGenerationMode(v)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Mode" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Full">Full Script (One Go)</SelectItem>
-                      <SelectItem value="Parts">Sequential Parts (Step-by-Step)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {generationMode === 'Parts' && (
-                  <div className="space-y-2">
-                    <Label>Number of Parts</Label>
-                    <Select value={numParts} onValueChange={setNumParts}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Parts" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="2">2 Parts</SelectItem>
-                        <SelectItem value="3">3 Parts</SelectItem>
-                        <SelectItem value="4">4 Parts</SelectItem>
-                        <SelectItem value="5">5 Parts</SelectItem>
-                        <SelectItem value="6">6 Parts</SelectItem>
-                        <SelectItem value="custom">Custom</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {numParts === 'custom' && (
-                      <Input 
-                        type="number"
-                        placeholder="Enter number of parts..." 
-                        value={customParts}
-                        onChange={(e) => setCustomParts(e.target.value)}
-                        className="mt-2"
-                        min="2"
-                        max="10"
-                      />
-                    )}
                   </div>
                 )}
-
                 <div className="space-y-2">
-                  <Label>Category</Label>
-                  <Select value={scriptCategory} onValueChange={setScriptCategory}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Gaming">Gaming</SelectItem>
-                      <SelectItem value="Tech">Tech</SelectItem>
-                      <SelectItem value="Vlogs">Vlogs</SelectItem>
-                      <SelectItem value="Education">Education</SelectItem>
-                      <SelectItem value="Finance">Finance</SelectItem>
-                      <SelectItem value="Custom">Custom</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {scriptCategory === 'Custom' && (
-                    <div className="flex gap-2 mt-2">
-                      <Input 
-                        placeholder="Enter custom category..." 
-                        value={customCategory}
-                        onChange={(e) => setCustomCategory(e.target.value)}
-                      />
-                      <MicButton onTranscript={(text) => setCustomCategory(prev => prev + (prev ? ' ' : '') + text)} />
-                    </div>
-                  )}
+                  <Label className="text-sm font-bold">AI Engine</Label>
+                  <ModelSelector value={selectedAIModel} onChange={setSelectedAIModel} />
                 </div>
+              </div>
 
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label>Script Types</Label>
-                    <Button variant="ghost" size="sm" onClick={selectAllTypes} className="h-6 text-xs">
-                      {selectedTypes.length === SCRIPT_TYPES.length ? 'Deselect All' : 'Select All'}
-                    </Button>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {SCRIPT_TYPES.map(type => (
-                      <div key={type} className="flex items-center space-x-2">
-                        <Checkbox 
-                          id={`type-${type}`} 
-                          checked={selectedTypes.includes(type)}
-                          onCheckedChange={() => toggleScriptType(type)}
-                        />
-                        <label htmlFor={`type-${type}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                          {type}
-                        </label>
+
+              <div className="space-y-4 pt-4 border-t">
+                {tool.id === 'script-to-visuals' && (
+                  <>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-sm font-bold">Prompt Language</Label>
+                        <Select value={promptLanguage} onValueChange={setPromptLanguage}>
+                          <SelectTrigger className="rounded-xl">
+                            <SelectValue placeholder="Prompt Language" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {LANGUAGES.map(lang => (
+                              <SelectItem key={`p-${lang}`} value={lang}>{lang}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Script Length</Label>
-                  <Select value={scriptLength} onValueChange={setScriptLength}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Length" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="15sec">15 seconds</SelectItem>
-                      <SelectItem value="30sec">30 seconds</SelectItem>
-                      <SelectItem value="1min">1 minute</SelectItem>
-                      <SelectItem value="2min">2 minutes</SelectItem>
-                      <SelectItem value="3min">3 minutes</SelectItem>
-                      <SelectItem value="4min">4 minutes</SelectItem>
-                      <SelectItem value="custom">Custom</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {scriptLength === 'custom' && (
-                    <div className="flex gap-2 mt-2">
-                      <Input 
-                        type="number"
-                        placeholder="Value" 
-                        value={customLengthValue}
-                        onChange={(e) => setCustomLengthValue(e.target.value)}
-                        className="flex-1"
-                        min="1"
-                      />
-                      <Select value={customLengthUnit} onValueChange={setCustomLengthUnit}>
-                        <SelectTrigger className="w-[120px]">
-                          <SelectValue />
+                      <div className="space-y-2">
+                        <Label className="text-sm font-bold">Voiceover Language</Label>
+                        <Select value={voiceoverLanguage} onValueChange={setVoiceoverLanguage}>
+                          <SelectTrigger className="rounded-xl">
+                            <SelectValue placeholder="Voiceover Language" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {LANGUAGES.map(lang => (
+                              <SelectItem key={`v-${lang}`} value={lang}>{lang}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-bold">Visual Duration per Scene</Label>
+                      <Select value={visualDuration} onValueChange={setVisualDuration}>
+                        <SelectTrigger className="rounded-xl">
+                          <SelectValue placeholder="Select Duration" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Seconds">Seconds</SelectItem>
-                          <SelectItem value="Minutes">Minutes</SelectItem>
-                          <SelectItem value="Hours">Hours</SelectItem>
+                          <SelectItem value="3s">3 seconds</SelectItem>
+                          <SelectItem value="4s">4 seconds</SelectItem>
+                          <SelectItem value="5s">5 seconds</SelectItem>
+                          <SelectItem value="6s">6 seconds</SelectItem>
+                          <SelectItem value="8s">8 seconds</SelectItem>
+                          <SelectItem value="custom">Custom</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                  )}
-                </div>
-              </>
-            )}
+                  </>
+                )}
 
-            {tool.id === 'thumbnail-ab-testing' && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-3 gap-4">
-                  {images.map((img, idx) => (
-                    <div key={idx} className="relative aspect-video rounded-md overflow-hidden border">
-                      <img src={img.data} alt={`Upload ${idx + 1}`} className="object-cover w-full h-full" />
-                      <button 
-                        onClick={() => removeImage(idx)}
-                        className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-1 hover:bg-black/70"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
+                {tool.id === 'advanced-script-writer' && (
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label className="text-sm font-bold">Script Format</Label>
+                      <Select value={scriptFormat} onValueChange={(v: any) => setScriptFormat(v)}>
+                        <SelectTrigger className="rounded-xl">
+                          <SelectValue placeholder="Select Format" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Full">Full Details (Headings, Visuals, Timestamps)</SelectItem>
+                          <SelectItem value="Paragraph">Single Paragraph (Continuous Narrative)</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
-                  ))}
-                  {images.length < 3 && (
-                    <label className="flex flex-col items-center justify-center aspect-video rounded-md border-2 border-dashed border-muted-foreground/25 cursor-pointer hover:bg-muted/50 transition-colors">
-                      <Upload className="w-6 h-6 text-muted-foreground mb-2" />
-                      <span className="text-xs text-muted-foreground">Upload Image</span>
-                      <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} multiple />
-                    </label>
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground">Upload 2-3 thumbnails to compare.</p>
-              </div>
-            )}
 
-            <div className="space-y-2">
-              <Label>
-                {tool.id === 'thumbnail-ab-testing' ? 'Video Context / Title' : 
-                 tool.id === 'channel-analyzer' ? 'Channel URL or Stats' :
-                 tool.id === 'competitor-analysis' ? 'Competitor Channel URL or Niche' :
-                 tool.id === 'script-to-visuals' ? 'Paste your Script' :
-                 tool.id === 'advanced-script-writer' ? 'Video Topic / Details' :
-                 'Topic / Context'}
-              </Label>
-              {tool.id === 'channel-analyzer' || tool.id === 'competitor-analysis' ? (
-                <div className="flex gap-2">
-                  <Input 
-                    placeholder={tool.id === 'channel-analyzer' ? "https://youtube.com/@channel or paste stats..." : "https://youtube.com/@competitor or niche description..."}
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                  />
-                  <MicButton onTranscript={(text) => setInput(prev => prev + (prev ? ' ' : '') + text)} />
-                </div>
-              ) : (
-                <div className="relative">
-                  <Textarea 
-                    placeholder={
-                      tool.id === 'script-to-visuals' ? "Paste your full video script here..." : 
-                      tool.id === 'advanced-script-writer' ? "E.g., A video explaining how black holes work..." :
-                      "Provide details here..."
-                    }
-                    className="min-h-[150px] resize-none pb-10"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                  />
-                  <div className="absolute bottom-2 right-2">
-                    <MicButton onTranscript={(text) => setInput(prev => prev + (prev ? ' ' : '') + text)} />
+                    <div className="space-y-2">
+                      <Label className="text-sm font-bold">Generation Mode</Label>
+                      <Select value={generationMode} onValueChange={(v: any) => setGenerationMode(v)}>
+                        <SelectTrigger className="rounded-xl">
+                          <SelectValue placeholder="Select Mode" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Full">Full Script (One Go)</SelectItem>
+                          <SelectItem value="Parts">Sequential Parts (Step-by-Step)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                )}
+
+                {tool.id === 'thumbnail-ab-testing' && (
+                  <div className="space-y-4">
+                    <Label className="text-sm font-bold">Upload Thumbnails</Label>
+                    <div className="grid grid-cols-3 gap-4">
+                      {images.map((img, idx) => (
+                        <div key={idx} className="relative aspect-video rounded-xl overflow-hidden border-2 border-primary/20">
+                          <img src={img.data} alt={`Upload ${idx + 1}`} className="object-cover w-full h-full" />
+                          <button 
+                            onClick={() => removeImage(idx)}
+                            className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-1 hover:bg-black/70"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                      {images.length < 3 && (
+                        <label className="flex flex-col items-center justify-center aspect-video rounded-xl border-2 border-dashed border-primary/20 cursor-pointer hover:bg-primary/5 transition-colors">
+                          <Upload className="w-6 h-6 text-primary mb-2" />
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-primary">Upload</span>
+                          <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} multiple />
+                        </label>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-bold">
+                    {tool.id === 'thumbnail-ab-testing' ? 'Video Context / Title' : 
+                     tool.id === 'channel-analyzer' ? 'Channel URL or Stats' :
+                     tool.id === 'competitor-analysis' ? 'Competitor Channel URL or Niche' :
+                     tool.id === 'script-to-visuals' ? 'Paste your Script' :
+                     tool.id === 'advanced-script-writer' ? 'Video Topic / Details' :
+                     'Topic / Context'}
+                  </Label>
+                  <div className="relative">
+                    <Textarea 
+                      placeholder="Provide details here..."
+                      className="min-h-[150px] resize-none pb-10 rounded-xl"
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                    />
+                    <div className="absolute bottom-2 right-2">
+                      <MicButton onTranscript={(text) => setInput(prev => prev + (prev ? ' ' : '') + text)} />
+                    </div>
                   </div>
                 </div>
-              )}
-            </div>
 
-            <Button 
-              className="w-full" 
-              size="lg" 
-              onClick={handleGenerate}
-              disabled={isLoading || (!input.trim() && tool.id !== 'thumbnail-ab-testing')}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Analyzing...
-                </>
-              ) : (
-                'Run Analysis'
-              )}
-            </Button>
-          </CardContent>
-        </Card>
+                <Button 
+                  className="w-full h-14 text-lg font-bold rounded-xl shadow-lg shadow-primary/20" 
+                  size="lg" 
+                  onClick={handleGenerate}
+                  disabled={isLoading || (!input.trim() && tool.id !== 'thumbnail-ab-testing')}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Analyzing...
+                    </>
+                  ) : (
+                    <>
+                      <BarChart2 className="mr-2 h-5 w-5" />
+                      Run Analysis
+                    </>
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Output Section */}
-        <Card className="shadow-sm flex flex-col">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <div className="space-y-1">
-              <CardTitle>Result</CardTitle>
-              <CardDescription>AI Analysis & Insights</CardDescription>
-            </div>
-            {output && typeof output === 'string' && (
-              <div className="flex space-x-2">
-                {tool.id === 'advanced-script-writer' && (
-                  <Button variant="outline" size="sm" onClick={() => {
-                    const scriptOnly = output
-                      .replace(/\[.*?\]/g, '') // Remove brackets and contents (visual cues, timestamps)
-                      .replace(/^#+\s+.*$/gm, '') // Remove markdown headers
-                      .replace(/\*\*.*?\*\*/g, (match) => match.replace(/\*\*/g, '')) // Remove bold markers but keep text
-                      .replace(/\*/g, '') // Remove italics
-                      .replace(/^(Visual|Voiceover|Audio|B-Roll).*?:/gim, '') // Remove column headers
-                      .replace(/\d{1,2}:\d{2}(\s*-\s*\d{1,2}:\d{2})?/g, '') // Remove naked timestamps like 00:00
-                      .replace(/^\s*[\r\n]/gm, '\n') // Remove extra empty lines
-                      .trim();
-                    handleCopy(scriptOnly, 'script-only');
-                  }}>
-                    {isCopied['script-only'] ? <CheckCircle2 className="h-4 w-4 text-green-500 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
-                    Copy Script Only
-                  </Button>
-                )}
-                <Button variant="outline" size="sm" onClick={() => handleCopy(output)}>
-                  {isCopied['main'] ? <CheckCircle2 className="h-4 w-4 text-green-500 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
-                  {tool.id === 'advanced-script-writer' ? 'Copy with Headings & Timestamps' : 'Copy All'}
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => handleRead(typeof output === 'string' ? output : JSON.stringify(output))}>
-                  <Volume2 className="h-4 w-4 mr-2" />
-                  Read
-                </Button>
+        <div className="lg:col-span-7">
+          <Card className="shadow-2xl border-none h-full flex flex-col bg-card/80 backdrop-blur-md">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b">
+              <div className="space-y-1">
+                <CardTitle className="text-2xl font-black">ANALYSIS REPORT</CardTitle>
+                <CardDescription>AI-powered insights and recommendations</CardDescription>
               </div>
-            )}
-          </CardHeader>
-          <CardContent className="flex-1">
-            {output ? (
-              <div className="space-y-4 h-full flex flex-col">
-                {tool.id === 'metadata-generator' ? (
-                  renderMetadataOutput()
-                ) : tool.id === 'script-to-visuals' ? (
-                  renderVisualsOutput()
-                ) : tool.id === 'channel-analyzer' ? (
-                  renderChannelAnalyzerOutput()
-                ) : (
-                  <div className="bg-muted/50 rounded-lg p-4 flex-1 min-h-[200px] overflow-y-auto prose prose-sm dark:prose-invert max-w-none">
-                    <ReactMarkdown>{output}</ReactMarkdown>
+              {output && typeof output === 'string' && (
+                <div className="flex space-x-2">
+                  <Button variant="outline" size="sm" onClick={() => handleCopy(output)} className="rounded-full">
+                    {isCopied['main'] ? <CheckCircle2 className="h-4 w-4 text-green-500 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
+                    Copy
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => handleRead(output)} className="rounded-full">
+                    <Volume2 className="h-4 w-4 mr-2" />
+                    Listen
+                  </Button>
+                </div>
+              )}
+            </CardHeader>
+            <CardContent className="flex-1 pt-6">
+              {isLoading ? (
+                <div className="h-full min-h-[400px] flex flex-col items-center justify-center space-y-6">
+                  <div className="relative">
+                    <div className="w-20 h-20 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                    <Bot className="absolute inset-0 m-auto w-8 h-8 text-primary animate-pulse" />
                   </div>
-                )}
-                
-                {tool.id === 'advanced-script-writer' && generationMode === 'Parts' && currentPart > 0 && currentPart < (numParts === 'custom' ? parseInt(customParts) : parseInt(numParts)) && (
-                  <Button 
-                    onClick={handleNextPart} 
-                    disabled={isLoading}
-                    className="w-full bg-gradient-to-r from-primary to-blue-600 hover:opacity-90"
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Generating Part {currentPart + 1}...
-                      </>
-                    ) : (
-                      `Generate Part ${currentPart + 1}`
-                    )}
-                  </Button>
-                )}
-              </div>
-            ) : (
-              <div className="h-full min-h-[200px] flex items-center justify-center text-muted-foreground border-2 border-dashed rounded-lg p-4 text-center">
-                Your analysis results will appear here.
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  <div className="text-center">
+                    <p className="text-xl font-bold mb-2">AI is processing...</p>
+                    <p className="text-muted-foreground">Deep analysis takes a few seconds. Please wait.</p>
+                  </div>
+                </div>
+              ) : output ? (
+                <div className="bg-muted/30 rounded-2xl p-6 h-full min-h-[400px] overflow-y-auto prose prose-lg dark:prose-invert max-w-none border border-border/50">
+                  {tool.id === 'channel-analyzer' ? renderChannelAnalyzerOutput() :
+                   tool.id === 'metadata-generator' ? renderMetadataOutput() :
+                   tool.id === 'script-to-visuals' ? renderVisualsOutput() :
+                   typeof output === 'string' ? <ReactMarkdown>{output}</ReactMarkdown> : 
+                   <pre className="text-xs overflow-auto">{JSON.stringify(output, null, 2)}</pre>
+                  }
+                  
+                  {tool.id === 'advanced-script-writer' && generationMode === 'Parts' && currentPart < (numParts === 'custom' ? parseInt(customParts) : parseInt(numParts)) && (
+                    <div className="mt-8 pt-8 border-t flex justify-center">
+                      <Button onClick={handleNextPart} disabled={isLoading} size="lg" className="rounded-full px-10 font-bold">
+                        {isLoading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Plus className="w-5 h-5 mr-2" />}
+                        Generate Part {currentPart + 1}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="h-full min-h-[400px] flex flex-col items-center justify-center text-muted-foreground border-4 border-dashed rounded-3xl p-12 text-center bg-muted/10">
+                  <div className="h-20 w-20 rounded-full bg-muted flex items-center justify-center mb-6">
+                    <BarChart2 className="h-10 w-10 text-muted-foreground/50" />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-2 text-foreground">Awaiting Analysis</h3>
+                  <p className="max-w-xs mx-auto">Upload your data or provide context to receive a comprehensive AI report.</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

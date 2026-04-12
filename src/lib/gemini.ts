@@ -26,9 +26,9 @@ const MODEL_MAPPING: Record<string, string> = {
   'Grok': 'grok-4-fast',
 };
 
-async function callPuter(prompt: string, model: string = 'openai/gpt-5.2-chat', useSearch: boolean = false): Promise<string> {
+async function callExternalAI(prompt: string, model: string = 'openai/gpt-5.2-chat', useSearch: boolean = false): Promise<string> {
   if (!window.puter) {
-    throw new Error('Puter.js not loaded. Please refresh the page.');
+    throw new Error('AI engine not loaded. Please refresh the page.');
   }
 
   try {
@@ -41,19 +41,16 @@ async function callPuter(prompt: string, model: string = 'openai/gpt-5.2-chat', 
       options.tools = [{ type: "web_search" }];
     }
 
-    // Puter.js ai.chat can sometimes fail if the model is not supported or quota is hit
     const response = await window.puter.ai.chat(prompt, options);
 
     if (!response) {
-      throw new Error('No response from Puter AI');
+      throw new Error('No response from AI engine');
     }
 
     let result = "";
     
-    // Check if response is an async iterable (for streaming)
     if (Symbol.asyncIterator in Object(response)) {
       for await (const part of response) {
-        // Handle both text and reasoning (for DeepSeek models)
         const text = part?.text || part?.choices?.[0]?.delta?.content || "";
         const reasoning = part?.reasoning || "";
         
@@ -63,19 +60,17 @@ async function callPuter(prompt: string, model: string = 'openai/gpt-5.2-chat', 
         result += text;
       }
     } else {
-      // Fallback for non-streaming response
       result = response.text || response.message?.content || response.choices?.[0]?.message?.content || String(response);
     }
 
     if (!result) {
-      throw new Error('Puter AI returned an empty response');
+      throw new Error('AI engine returned an empty response');
     }
 
     return result;
   } catch (error: any) {
-    console.error('Detailed Puter API Error:', error);
+    console.error('Detailed AI API Error:', error);
     
-    // Extract more meaningful error message if possible
     let errorMessage = 'Unknown error';
     if (typeof error === 'string') {
       errorMessage = error;
@@ -83,15 +78,9 @@ async function callPuter(prompt: string, model: string = 'openai/gpt-5.2-chat', 
       errorMessage = error.message;
     } else if (error?.error?.message) {
       errorMessage = error.error.message;
-    } else if (typeof error === 'object') {
-      try {
-        errorMessage = JSON.stringify(error);
-      } catch (e) {
-        errorMessage = 'Complex error object (check console)';
-      }
     }
 
-    throw new Error(`Puter API Error: ${errorMessage}`);
+    throw new Error(`AI API Error: ${errorMessage}`);
   }
 }
 
@@ -127,7 +116,7 @@ export async function generateAIResponse(prompt: string, selectedModel: AIModel 
         return response.text || '';
       } else {
         const puterModel = MODEL_MAPPING[model] || 'openai/gpt-5.2-chat';
-        return await callPuter(enhancedPrompt, puterModel, useSearch);
+        return await callExternalAI(enhancedPrompt, puterModel, useSearch);
       }
     } catch (error: any) {
       console.error(`Model ${model} failed:`, error);

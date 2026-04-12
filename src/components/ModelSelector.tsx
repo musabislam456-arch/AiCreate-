@@ -41,25 +41,25 @@ export function ModelSelector({ value, onChange, className }: ModelSelectorProps
           <SelectItem value="Claude">
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-orange-500" />
-              <span>Claude (Puter)</span>
+              <span>Claude</span>
             </div>
           </SelectItem>
           <SelectItem value="DeepSeek">
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-cyan-500" />
-              <span>DeepSeek (Puter)</span>
+              <span>DeepSeek</span>
             </div>
           </SelectItem>
           <SelectItem value="DeepSeek-Reasoner">
             <div className="flex items-center gap-2">
               <Cpu className="w-4 h-4 text-indigo-500" />
-              <span>DeepSeek Reasoner (Puter)</span>
+              <span>DeepSeek Reasoner</span>
             </div>
           </SelectItem>
           <SelectItem value="Grok">
             <div className="flex items-center gap-2">
               <Cpu className="w-4 h-4 text-purple-500" />
-              <span>Grok (Puter)</span>
+              <span>Grok</span>
             </div>
           </SelectItem>
         </SelectContent>

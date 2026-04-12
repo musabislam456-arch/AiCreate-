@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { MessageSquare, X, Send, Loader2, Bot } from 'lucide-react';
+import { MessageSquare, X, Send, Loader2, Bot, Maximize2, Minimize2, Trash2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -8,6 +8,7 @@ import { chatWithAssistant, AIModel } from '../lib/gemini';
 import ReactMarkdown from 'react-markdown';
 import { MicButton } from './MicButton';
 import { ModelSelector } from './ModelSelector';
+import { cn } from '../lib/utils';
 
 const LANGUAGES = [
   "English", "Spanish", "French", "German", "Hindi", 
@@ -22,6 +23,7 @@ interface Message {
 
 export function FloatingChat() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     { role: 'assistant', text: 'Hi! I am your Creator AI Assistant. How can I help you grow your channel today?' }
   ]);
@@ -55,91 +57,13 @@ export function FloatingChat() {
     }
   };
 
-  return (
-    <div className="fixed bottom-6 right-6 z-50">
-      {isOpen ? (
-        <Card className="w-[350px] h-[500px] flex flex-col shadow-2xl border-primary/20">
-          <CardHeader className="p-4 border-b flex flex-row items-center justify-between space-y-0 bg-primary/5">
-            <div className="flex items-center space-x-2">
-              <Bot className="w-5 h-5 text-primary" />
-              <CardTitle className="text-base font-semibold">Creator Assistant</CardTitle>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Select value={language} onValueChange={setLanguage}>
-                <SelectTrigger className="h-7 w-[80px] text-[10px] px-2">
-                  <SelectValue placeholder="Lang" />
-                </SelectTrigger>
-                <SelectContent>
-                  {LANGUAGES.map(lang => (
-                    <SelectItem key={lang} value={lang}>{lang}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={selectedAIModel} onValueChange={(v) => setSelectedAIModel(v as AIModel)}>
-                <SelectTrigger className="h-7 w-[80px] text-[10px] px-2">
-                  <SelectValue placeholder="Model" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Auto">Auto</SelectItem>
-                  <SelectItem value="ChatGPT">GPT-4</SelectItem>
-                  <SelectItem value="Gemini">Gemini</SelectItem>
-                  <SelectItem value="Claude">Claude</SelectItem>
-                  <SelectItem value="DeepSeek">DeepSeek</SelectItem>
-                  <SelectItem value="DeepSeek-Reasoner">Reasoner</SelectItem>
-                  <SelectItem value="Grok">Grok</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button variant="ghost" size="icon-sm" onClick={() => setIsOpen(false)}>
-                <X className="w-4 h-4" />
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="flex-1 p-0 flex flex-col overflow-hidden">
-            <div className="flex-1 p-4 overflow-y-auto" ref={scrollRef}>
-              <div className="space-y-4">
-                {messages.map((msg, idx) => (
-                  <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div 
-                      className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${
-                        msg.role === 'user' 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'bg-muted prose prose-sm dark:prose-invert'
-                      }`}
-                    >
-                      {msg.role === 'user' ? msg.text : <ReactMarkdown>{msg.text}</ReactMarkdown>}
-                    </div>
-                  </div>
-                ))}
-                {isLoading && (
-                  <div className="flex justify-start">
-                    <div className="bg-muted rounded-lg px-3 py-2 text-sm flex items-center space-x-2">
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Thinking...</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="p-3 border-t bg-background">
-              <form 
-                onSubmit={(e) => { e.preventDefault(); handleSend(); }}
-                className="flex items-center space-x-2"
-              >
-                <Input 
-                  placeholder="Ask me anything..." 
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  className="flex-1"
-                />
-                <MicButton onTranscript={(text) => setInput(prev => prev + (prev ? ' ' : '') + text)} />
-                <Button type="submit" size="icon" disabled={isLoading || !input.trim()}>
-                  <Send className="w-4 h-4" />
-                </Button>
-              </form>
-            </div>
-          </CardContent>
-        </Card>
-      ) : (
+  const clearChat = () => {
+    setMessages([{ role: 'assistant', text: 'Chat cleared. How can I help you now?' }]);
+  };
+
+  if (!isOpen) {
+    return (
+      <div className="fixed bottom-6 right-6 z-50">
         <Button 
           size="icon-lg" 
           className="rounded-full shadow-xl h-14 w-14 bg-primary hover:bg-primary/90"
@@ -147,7 +71,127 @@ export function FloatingChat() {
         >
           <MessageSquare className="w-6 h-6" />
         </Button>
-      )}
+      </div>
+    );
+  }
+
+  return (
+    <div className={cn(
+      "fixed z-50 transition-all duration-300 ease-in-out",
+      isFullscreen 
+        ? "inset-0 bg-background" 
+        : "bottom-6 right-6 w-[350px] h-[500px]"
+    )}>
+      <Card className={cn(
+        "flex flex-col shadow-2xl border-primary/20 h-full",
+        isFullscreen ? "rounded-none border-none" : ""
+      )}>
+        <CardHeader className="p-4 border-b flex flex-row items-center justify-between space-y-0 bg-primary/5">
+          <div className="flex items-center space-x-2">
+            <Bot className="w-5 h-5 text-primary" />
+            <CardTitle className={cn("font-semibold", isFullscreen ? "text-xl" : "text-base")}>
+              Creator Assistant
+            </CardTitle>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Select value={language} onValueChange={setLanguage}>
+              <SelectTrigger className="h-7 w-[80px] text-[10px] px-2">
+                <SelectValue placeholder="Lang" />
+              </SelectTrigger>
+              <SelectContent>
+                {LANGUAGES.map(lang => (
+                  <SelectItem key={lang} value={lang}>{lang}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={selectedAIModel} onValueChange={(v) => setSelectedAIModel(v as AIModel)}>
+              <SelectTrigger className="h-7 w-[80px] text-[10px] px-2">
+                <SelectValue placeholder="Model" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Auto">Auto</SelectItem>
+                <SelectItem value="ChatGPT">GPT-4</SelectItem>
+                <SelectItem value="Gemini">Gemini</SelectItem>
+                <SelectItem value="Claude">Claude</SelectItem>
+                <SelectItem value="DeepSeek">DeepSeek</SelectItem>
+                <SelectItem value="DeepSeek-Reasoner">Reasoner</SelectItem>
+                <SelectItem value="Grok">Grok</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Button variant="ghost" size="icon-sm" onClick={() => setIsFullscreen(!isFullscreen)} title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Mode"}>
+              {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+            </Button>
+            
+            <Button variant="ghost" size="icon-sm" onClick={clearChat} title="Clear Chat">
+              <Trash2 className="w-4 h-4" />
+            </Button>
+
+            <Button variant="ghost" size="icon-sm" onClick={() => { setIsOpen(false); setIsFullscreen(false); }}>
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="flex-1 p-0 flex flex-col overflow-hidden">
+          <div className={cn(
+            "flex-1 p-4 overflow-y-auto",
+            isFullscreen ? "max-w-4xl mx-auto w-full" : ""
+          )} ref={scrollRef}>
+            <div className="space-y-6">
+              {messages.map((msg, idx) => (
+                <div key={idx} className={cn(
+                  "flex",
+                  msg.role === 'user' ? 'justify-end' : 'justify-start'
+                )}>
+                  <div 
+                    className={cn(
+                      "max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm",
+                      msg.role === 'user' 
+                        ? 'bg-primary text-primary-foreground rounded-tr-none' 
+                        : 'bg-muted prose prose-sm dark:prose-invert rounded-tl-none'
+                    )}
+                  >
+                    {msg.role === 'user' ? msg.text : <ReactMarkdown>{msg.text}</ReactMarkdown>}
+                  </div>
+                </div>
+              ))}
+              {isLoading && (
+                <div className="flex justify-start">
+                  <div className="bg-muted rounded-2xl rounded-tl-none px-4 py-3 text-sm flex items-center space-x-2 shadow-sm">
+                    <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                    <span className="text-muted-foreground">Thinking...</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          <div className={cn(
+            "p-4 border-t bg-background",
+            isFullscreen ? "pb-8" : ""
+          )}>
+            <div className={cn(
+              "flex items-center space-x-2",
+              isFullscreen ? "max-w-4xl mx-auto w-full" : ""
+            )}>
+              <form 
+                onSubmit={(e) => { e.preventDefault(); handleSend(); }}
+                className="flex-1 flex items-center space-x-2 bg-muted rounded-full px-4 py-1"
+              >
+                <Input 
+                  placeholder="Ask me anything..." 
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  className="flex-1 border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+                />
+                <MicButton onTranscript={(text) => setInput(prev => prev + (prev ? ' ' : '') + text)} />
+                <Button type="submit" size="icon" variant="ghost" disabled={isLoading || !input.trim()} className="text-primary hover:text-primary/80 hover:bg-transparent">
+                  <Send className="w-5 h-5" />
+                </Button>
+              </form>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

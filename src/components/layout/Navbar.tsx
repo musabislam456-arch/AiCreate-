@@ -74,13 +74,35 @@ export function Navbar() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center space-x-2">
           <Sparkles className="h-6 w-6 text-primary" />
-          <span className="font-bold text-xl tracking-tight">CreatorAI</span>
+          <span className="font-bold text-2xl tracking-tighter">CreatorAI</span>
         </Link>
 
-        <div className="flex items-center space-x-4">
-          <Link to="/" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-            Tools
-          </Link>
+        <div className="flex items-center space-x-6">
+          <button 
+            onClick={() => {
+              if (window.location.pathname !== '/') {
+                window.location.href = '/#core-tools';
+              } else {
+                document.getElementById('core-tools')?.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+            className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors"
+          >
+            Explore Tools
+          </button>
+          
+          <button 
+            onClick={() => {
+              if (window.location.pathname !== '/') {
+                window.location.href = '/#advanced-tools';
+              } else {
+                document.getElementById('advanced-tools')?.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+            className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors"
+          >
+            Advanced Features
+          </button>
           
           {user ? (
             <DropdownMenu>

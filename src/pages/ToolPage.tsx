@@ -6,7 +6,9 @@ import { useAppStore } from '../lib/store';
 import { Button } from '../components/ui/button';
 import { Textarea } from '../components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Loader2, Copy, CheckCircle2, MessageSquare, ArrowLeft, ImagePlus, Download, Share2, Briefcase, TrendingDown, Film, MessageCircle, TrendingUp, CalendarDays, RefreshCw, Cpu, Volume2 } from 'lucide-react';
+import { Loader2, Copy, CheckCircle2, MessageSquare, ArrowLeft, ImagePlus, Download, Share2, Briefcase, TrendingDown, Film, MessageCircle, TrendingUp, CalendarDays, RefreshCw, Cpu, Volume2, Wand2, Bot, Sparkles, Star } from 'lucide-react';
+import { Badge } from '../components/ui/badge';
+import { cn } from '../lib/utils';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
@@ -59,6 +61,18 @@ export function ToolPage() {
   if (!tool) {
     return <Navigate to="/" replace />;
   }
+
+  const ToolIcon = tool.icon;
+
+  const getToolColor = () => {
+    switch (tool.id) {
+      case 'seo-title': return 'bg-blue-500/10 text-blue-500';
+      case 'viral-hooks': return 'bg-red-500/10 text-red-500';
+      case 'thumbnail-gen': return 'bg-purple-500/10 text-purple-500';
+      case 'content-scheduler': return 'bg-emerald-500/10 text-emerald-500';
+      default: return 'bg-primary/10 text-primary';
+    }
+  };
 
   const handleGenerate = async () => {
     if (!input.trim()) {
@@ -196,580 +210,308 @@ export function ToolPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-12 max-w-5xl">
-      <Button variant="ghost" onClick={() => navigate(-1)} className="mb-4 -ml-4 text-muted-foreground">
+    <div className="container mx-auto px-4 py-12 max-w-6xl">
+      <Button variant="ghost" onClick={() => navigate(-1)} className="mb-8 -ml-4 text-muted-foreground hover:text-primary">
         <ArrowLeft className="w-4 h-4 mr-2" />
-        Back
+        Back to Dashboard
       </Button>
-      <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">{tool.title}</h1>
-        <p className="text-muted-foreground text-lg">{tool.description}</p>
+      
+      <div className="flex flex-col md:flex-row md:items-center gap-6 mb-12">
+        <div className={cn("h-20 w-20 rounded-3xl flex items-center justify-center shadow-inner", getToolColor())}>
+          <ToolIcon className="h-10 w-10" />
+        </div>
+        <div>
+          <div className="flex items-center gap-3 mb-2">
+            <h1 className="text-4xl font-black tracking-tight">{tool.title}</h1>
+            <Badge variant="outline" className="rounded-full border-primary/20 text-primary">{tool.category}</Badge>
+          </div>
+          <p className="text-muted-foreground text-xl max-w-2xl">{tool.description}</p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-20">
         {/* Input Section */}
-        <Card className="shadow-sm">
-          <CardHeader>
-            <CardTitle>Input</CardTitle>
-            <CardDescription>What is your content about?</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {tool.supportsLanguage && (
-                <div className="space-y-2">
-                  <Label>Output Language</Label>
-                  <Select value={language} onValueChange={setLanguage}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Language" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {LANGUAGES.map(lang => (
-                        <SelectItem key={lang} value={lang}>{lang}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-
-              <ModelSelector value={selectedAIModel} onChange={setSelectedAIModel} />
-            </div>
-
-            {/* Unique Interfaces per Tool */}
-            {tool.id === 'seo-title-generator' && (
-              <div className="space-y-2">
-                <Label>Main Keyword</Label>
-                <div className="flex gap-2">
-                  <Input 
-                    placeholder="E.g., YouTube Algorithm 2026" 
-                    value={extraInput1}
-                    onChange={(e) => setExtraInput1(e.target.value)}
-                  />
-                  <MicButton onTranscript={(text) => setExtraInput1(prev => prev + (prev ? ' ' : '') + text)} />
-                </div>
-              </div>
-            )}
-
-            {tool.id === 'viral-hook-generator' && (
-              <div className="space-y-2">
-                <Label>Hook Tone</Label>
-                <Select value={extraInput1} onValueChange={setExtraInput1}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Tone" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Funny">Funny</SelectItem>
-                    <SelectItem value="Shocking">Shocking</SelectItem>
-                    <SelectItem value="Educational">Educational</SelectItem>
-                    <SelectItem value="Story-driven">Story-driven</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            {tool.id === 'shorts-script-generator' && (
-              <div className="space-y-2">
-                <Label>Target Audience</Label>
-                <div className="flex gap-2">
-                  <Input 
-                    placeholder="E.g., Teenagers, Tech Enthusiasts, Beginners..." 
-                    value={extraInput1}
-                    onChange={(e) => setExtraInput1(e.target.value)}
-                  />
-                  <MicButton onTranscript={(text) => setExtraInput1(prev => prev + (prev ? ' ' : '') + text)} />
-                </div>
-              </div>
-            )}
-
-            {tool.id === 'ai-rewrite-tool' && (
-              <div className="space-y-2">
-                <Label>Rewrite Goal</Label>
-                <Select value={extraInput1} onValueChange={setExtraInput1}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Goal" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="More engaging">More engaging</SelectItem>
-                    <SelectItem value="Shorter and punchier">Shorter and punchier</SelectItem>
-                    <SelectItem value="Funnier">Funnier</SelectItem>
-                    <SelectItem value="More professional">More professional</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            {tool.id === 'thumbnail-generator' && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 space-y-0">
-                <div className="space-y-2">
-                  <Label>Thumbnail Style</Label>
-                  <Select value={extraInput1} onValueChange={setExtraInput1}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Style" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Cinematic">Cinematic</SelectItem>
-                      <SelectItem value="Cartoon/Anime">Cartoon/Anime</SelectItem>
-                      <SelectItem value="Minimalist">Minimalist</SelectItem>
-                      <SelectItem value="Hyper-realistic">Hyper-realistic</SelectItem>
-                      <SelectItem value="Neon/Cyberpunk">Neon/Cyberpunk</SelectItem>
-                      <SelectItem value="3D Render">3D Render</SelectItem>
-                      <SelectItem value="Vlogging">Vlogging</SelectItem>
-                      <SelectItem value="Gaming">Gaming</SelectItem>
-                      <SelectItem value="Tech Review">Tech Review</SelectItem>
-                      <SelectItem value="Reaction">Reaction</SelectItem>
-                      <SelectItem value="Watercolor">Watercolor</SelectItem>
-                      <SelectItem value="Sketch">Sketch</SelectItem>
-                      <SelectItem value="Podcast">Podcast</SelectItem>
-                      <SelectItem value="Tutorial">Tutorial</SelectItem>
-                      <SelectItem value="Crypto/Finance">Crypto/Finance</SelectItem>
-                      <SelectItem value="Fitness">Fitness</SelectItem>
-                      <SelectItem value="Travel">Travel</SelectItem>
-                      <SelectItem value="Food/Cooking">Food/Cooking</SelectItem>
-                      <SelectItem value="ASMR">ASMR</SelectItem>
-                      <SelectItem value="Storytime">Storytime</SelectItem>
-                      <SelectItem value="Beauty/Makeup">Beauty/Makeup</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>AI Model</Label>
-                  <Select value={aiModel} onValueChange={setAiModel}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Model" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="flux">Flux (High Quality)</SelectItem>
-                      <SelectItem value="anima-banna">Anima-Banna (Anime)</SelectItem>
-                      <SelectItem value="turbo">Turbo (Fast)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Resolution / Quality</Label>
-                  <Select value={resolution} onValueChange={setResolution}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Resolution" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1280x720">720p (HD)</SelectItem>
-                      <SelectItem value="1920x1080">1080p (FHD)</SelectItem>
-                      <SelectItem value="3840x2160">4K (UHD)</SelectItem>
-                      <SelectItem value="7680x4320">8K (Max Quality)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            )}
-
-            {tool.id === 'sponsorship-pitch' && (
-              <>
-                <div className="space-y-2">
-                  <Label>Channel Name & Niche</Label>
-                  <div className="flex gap-2">
-                    <Input 
-                      placeholder="E.g., TechReviewer (Consumer Tech)" 
-                      value={extraInput1}
-                      onChange={(e) => setExtraInput1(e.target.value)}
-                    />
-                    <MicButton onTranscript={(text) => setExtraInput1(prev => prev + (prev ? ' ' : '') + text)} />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label>Audience Size / Avg Views</Label>
-                  <div className="flex gap-2">
-                    <Input 
-                      placeholder="E.g., 50k subs, 10k avg views" 
-                      value={extraInput2}
-                      onChange={(e) => setExtraInput2(e.target.value)}
-                    />
-                    <MicButton onTranscript={(text) => setExtraInput2(prev => prev + (prev ? ' ' : '') + text)} />
-                  </div>
-                </div>
-              </>
-            )}
-
-            {tool.id === 'trend-adapter' && (
-              <div className="space-y-2">
-                <Label>Your Channel Niche</Label>
-                <div className="flex gap-2">
-                  <Input 
-                    placeholder="E.g., Personal Finance for Beginners" 
-                    value={extraInput1}
-                    onChange={(e) => setExtraInput1(e.target.value)}
-                  />
-                  <MicButton onTranscript={(text) => setExtraInput1(prev => prev + (prev ? ' ' : '') + text)} />
-                </div>
-              </div>
-            )}
-
-            {tool.id === 'content-scheduler' && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="lg:col-span-5 space-y-6">
+          <Card className="shadow-xl border-none bg-card/50 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Cpu className="w-5 h-5 text-primary" />
+                Configure Input
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 gap-4">
+                {tool.supportsLanguage && (
                   <div className="space-y-2">
-                    <Label>Channel Category</Label>
-                    <Select value={scheduleCategory} onValueChange={setScheduleCategory}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Category" />
+                    <Label className="text-sm font-bold">Output Language</Label>
+                    <Select value={language} onValueChange={setLanguage}>
+                      <SelectTrigger className="rounded-xl">
+                        <SelectValue placeholder="Select Language" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Gaming">Gaming</SelectItem>
-                        <SelectItem value="Tech & Gadgets">Tech & Gadgets</SelectItem>
-                        <SelectItem value="Vlogging & Lifestyle">Vlogging & Lifestyle</SelectItem>
-                        <SelectItem value="Education & How-to">Education & How-to</SelectItem>
-                        <SelectItem value="Finance & Crypto">Finance & Crypto</SelectItem>
-                        <SelectItem value="Fitness & Health">Fitness & Health</SelectItem>
-                        <SelectItem value="Beauty & Fashion">Beauty & Fashion</SelectItem>
-                        <SelectItem value="Entertainment & Comedy">Entertainment & Comedy</SelectItem>
-                        <SelectItem value="Food & Cooking">Food & Cooking</SelectItem>
-                        <SelectItem value="Travel">Travel</SelectItem>
-                        <SelectItem value="Custom">Custom (Type your own)</SelectItem>
+                        {LANGUAGES.map(lang => (
+                          <SelectItem key={lang} value={lang}>{lang}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
-                  
-                  {scheduleCategory === 'Custom' && (
-                    <div className="space-y-2">
-                      <Label>Custom Category</Label>
+                )}
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-bold">AI Engine</Label>
+                  <ModelSelector value={selectedAIModel} onChange={setSelectedAIModel} />
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-4 border-t">
+                {/* Unique Interfaces per Tool */}
+                {tool.id === 'seo-title-generator' && (
+                  <div className="space-y-2">
+                    <Label className="text-sm font-bold">Main Keyword</Label>
+                    <div className="flex gap-2">
                       <Input 
-                        placeholder="E.g., Woodworking, ASMR..." 
-                        value={customScheduleCategory}
-                        onChange={(e) => setCustomScheduleCategory(e.target.value)}
+                        placeholder="E.g., YouTube Algorithm 2026" 
+                        value={extraInput1}
+                        onChange={(e) => setExtraInput1(e.target.value)}
+                        className="rounded-xl"
                       />
+                      <MicButton onTranscript={(text) => setExtraInput1(prev => prev + (prev ? ' ' : '') + text)} />
                     </div>
-                  )}
+                  </div>
+                )}
 
+                {tool.id === 'viral-hook-generator' && (
                   <div className="space-y-2">
-                    <Label>Target Country / Audience Location</Label>
-                    <Select value={scheduleCountry} onValueChange={setScheduleCountry}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Country" />
+                    <Label className="text-sm font-bold">Hook Tone</Label>
+                    <Select value={extraInput1} onValueChange={setExtraInput1}>
+                      <SelectTrigger className="rounded-xl">
+                        <SelectValue placeholder="Select Tone" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="United States">United States</SelectItem>
-                        <SelectItem value="United Kingdom">United Kingdom</SelectItem>
-                        <SelectItem value="India">India</SelectItem>
-                        <SelectItem value="Canada">Canada</SelectItem>
-                        <SelectItem value="Australia">Australia</SelectItem>
-                        <SelectItem value="Global / Worldwide">Global / Worldwide</SelectItem>
+                        <SelectItem value="Funny">Funny</SelectItem>
+                        <SelectItem value="Shocking">Shocking</SelectItem>
+                        <SelectItem value="Educational">Educational</SelectItem>
+                        <SelectItem value="Story-driven">Story-driven</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
+                )}
 
+                {tool.id === 'shorts-script-generator' && (
                   <div className="space-y-2">
-                    <Label>Schedule Duration</Label>
-                    <Select value={scheduleDuration} onValueChange={setScheduleDuration}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Duration" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="3 Days">3 Days</SelectItem>
-                        <SelectItem value="4 Days">4 Days</SelectItem>
-                        <SelectItem value="5 Days">5 Days</SelectItem>
-                        <SelectItem value="6 Days">6 Days</SelectItem>
-                        <SelectItem value="1 Week">1 Week</SelectItem>
-                        <SelectItem value="1 Month">1 Month</SelectItem>
-                        <SelectItem value="Custom">Custom</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {scheduleDuration === 'Custom' && (
-                    <div className="space-y-2">
-                      <Label>Custom Duration (Max 1 Month)</Label>
-                      <div className="flex gap-2">
-                        <Input 
-                          type="number"
-                          min="1"
-                          max="31"
-                          value={customDurationValue}
-                          onChange={(e) => setCustomDurationValue(e.target.value)}
-                          className="w-20"
-                        />
-                        <Select value={customDurationUnit} onValueChange={setCustomDurationUnit}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Days">Days</SelectItem>
-                            <SelectItem value="Weeks">Weeks</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
+                    <Label className="text-sm font-bold">Target Audience</Label>
+                    <div className="flex gap-2">
+                      <Input 
+                        placeholder="E.g., Teenagers, Tech Enthusiasts..." 
+                        value={extraInput1}
+                        onChange={(e) => setExtraInput1(e.target.value)}
+                        className="rounded-xl"
+                      />
+                      <MicButton onTranscript={(text) => setExtraInput1(prev => prev + (prev ? ' ' : '') + text)} />
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
 
                 <div className="space-y-2">
-                  <Label>Channel URL (Optional - For AI Analysis)</Label>
-                  <Input 
-                    placeholder="https://youtube.com/@yourchannel" 
-                    value={scheduleUrl}
-                    onChange={(e) => setScheduleUrl(e.target.value)}
-                  />
+                  <Label className="text-sm font-bold">
+                    {tool.id === 'ai-rewrite-tool' ? 'Add your Script' : 
+                     tool.id === 'caption-generator' ? 'Video/Image Description' :
+                     tool.id === 'seo-title-generator' ? 'Video Context' :
+                     tool.id === 'shorts-script-generator' ? 'Short Concept' :
+                     tool.id === 'thumbnail-generator' ? 'Video Title / Topic' :
+                     tool.id === 'sponsorship-pitch' ? 'Target Brand & Product' :
+                     tool.id === 'trend-adapter' ? 'Describe the Trend or Audio' :
+                     tool.id === 'content-scheduler' ? 'Channel Details & Audience Info' :
+                     'Topic / Context'}
+                  </Label>
+                  <div className="relative">
+                    <Textarea 
+                      placeholder={
+                        tool.id === 'ai-rewrite-tool' ? "Paste the script you want to rewrite..." :
+                        tool.id === 'caption-generator' ? "Describe what happens in your video or image..." :
+                        tool.id === 'thumbnail-generator' ? "E.g., How to build a custom PC in 2026..." :
+                        "E.g., A video about 5 tips for beginner photographers..."
+                      }
+                      className="min-h-[180px] resize-none pb-10 rounded-xl"
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                    />
+                    <div className="absolute bottom-2 right-2">
+                      <MicButton onTranscript={(text) => setInput(prev => prev + (prev ? ' ' : '') + text)} />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            )}
 
-            <div className="space-y-2">
-              <Label>
-                {tool.id === 'ai-rewrite-tool' ? 'Add your Script' : 
-                 tool.id === 'caption-generator' ? 'Video/Image Description' :
-                 tool.id === 'seo-title-generator' ? 'Video Context' :
-                 tool.id === 'shorts-script-generator' ? 'Short Concept' :
-                 tool.id === 'thumbnail-generator' ? 'Video Title / Topic' :
-                 tool.id === 'sponsorship-pitch' ? 'Target Brand & Product' :
-                 tool.id === 'trend-adapter' ? 'Describe the Trend or Audio' :
-                 tool.id === 'content-scheduler' ? 'Channel Details & Audience Info' :
-                 tool.id === 'content-multiplier' || tool.id === 'retention-predictor' || tool.id === 'broll-generator' ? 'Paste your Script' :
-                 'Topic / Context'}
-              </Label>
-              <div className="relative">
-                <Textarea 
-                  placeholder={
-                    tool.id === 'ai-rewrite-tool' ? "Paste the script you want to rewrite..." :
-                    tool.id === 'caption-generator' ? "Describe what happens in your video or image..." :
-                    tool.id === 'thumbnail-generator' ? "E.g., How to build a custom PC in 2026..." :
-                    tool.id === 'sponsorship-pitch' ? "E.g., NordVPN, promoting their new threat protection feature..." :
-                    tool.id === 'trend-adapter' ? "E.g., The 'Of course I'm a...' trend..." :
-                    tool.id === 'content-scheduler' ? "Describe your channel, past videos, target audience, and goals..." :
-                    tool.id === 'content-multiplier' || tool.id === 'retention-predictor' || tool.id === 'broll-generator' ? "Paste your full video script here..." :
-                    "E.g., A video about 5 tips for beginner photographers..."
-                  }
-                  className="min-h-[200px] resize-none pb-10"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                />
-                <div className="absolute bottom-2 right-2">
-                  <MicButton onTranscript={(text) => setInput(prev => prev + (prev ? ' ' : '') + text)} />
-                </div>
+                <Button 
+                  className="w-full h-14 text-lg font-bold rounded-xl shadow-lg shadow-primary/20" 
+                  size="lg" 
+                  onClick={handleGenerate}
+                  disabled={isLoading || !input.trim()}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Crafting Magic...
+                    </>
+                  ) : (
+                    <>
+                      <Wand2 className="mr-2 h-5 w-5" />
+                      Generate Now
+                    </>
+                  )}
+                </Button>
               </div>
-            </div>
-
-            {tool.id === 'caption-generator' && (
-              <div className="space-y-2">
-                <Label>Upload Video/Image (Optional Context)</Label>
-                <Input type="file" accept="video/*,image/*" />
-                <p className="text-xs text-muted-foreground">Upload media to help you remember the context.</p>
-              </div>
-            )}
-
-            <Button 
-              className="w-full" 
-              size="lg" 
-              onClick={handleGenerate}
-              disabled={isLoading || !input.trim()}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Generating...
-                </>
-              ) : (
-                'Generate Content'
-              )}
-            </Button>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Output Section */}
-        <Card className="shadow-sm flex flex-col">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <div className="space-y-1">
-              <CardTitle>Result</CardTitle>
-              <CardDescription>Your AI-generated content</CardDescription>
-            </div>
-            {output && (
-              <div className="flex space-x-2">
-                {tool.id === 'content-scheduler' && (
-                  <Button variant="outline" size="sm" onClick={handleGenerate} disabled={isLoading}>
-                    <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-                    Reschedule
-                  </Button>
-                )}
-                {tool.id === 'shorts-script-generator' && (
-                  <Button variant="outline" size="sm" onClick={() => {
-                    const scriptOnly = output
-                      .replace(/\[.*?\]/g, '') // Remove brackets and contents (visual cues, timestamps)
-                      .replace(/^#+\s+.*$/gm, '') // Remove markdown headers
-                      .replace(/\*\*.*?\*\*/g, (match) => match.replace(/\*\*/g, '')) // Remove bold markers but keep text
-                      .replace(/\*/g, '') // Remove italics
-                      .replace(/^(Visual|Voiceover|Audio|B-Roll).*?:/gim, '') // Remove column headers
-                      .replace(/^\s*[\r\n]/gm, '\n') // Remove extra empty lines
-                      .trim();
-                    navigator.clipboard.writeText(scriptOnly);
-                    toast.success('Script only copied!');
-                  }}>
-                    Copy Script Only
-                  </Button>
-                )}
-                <Button variant="outline" size="sm" onClick={handleCopy}>
-                  {isCopied ? <CheckCircle2 className="h-4 w-4 text-green-500 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
-                  {tool.id === 'caption-generator' ? 'Ready to Copy' : 'Copy All'}
-                </Button>
-                <Button variant="outline" size="sm" onClick={handleRead}>
-                  <Volume2 className="h-4 w-4 mr-2" />
-                  Read
-                </Button>
+        <div className="lg:col-span-7">
+          <Card className="shadow-2xl border-none h-full flex flex-col bg-card/80 backdrop-blur-md">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b">
+              <div className="space-y-1">
+                <CardTitle className="text-2xl font-black">GENERATED RESULT</CardTitle>
+                <CardDescription>Ready for your next viral post</CardDescription>
               </div>
-            )}
-          </CardHeader>
-          <CardContent className="flex-1">
-            {isLoading && tool.id === 'thumbnail-generator' ? (
-              <div className="h-full min-h-[300px] flex flex-col items-center justify-center space-y-6">
-                <div className="relative w-32 h-32">
-                  <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                    <circle className="text-muted stroke-current" strokeWidth="8" cx="50" cy="50" r="40" fill="transparent"></circle>
-                    <circle 
-                      className="text-primary stroke-current transition-all duration-300 ease-in-out" 
-                      strokeWidth="8" 
-                      strokeLinecap="round" 
-                      cx="50" cy="50" r="40" 
-                      fill="transparent" 
-                      strokeDasharray="251.2" 
-                      strokeDashoffset={251.2 - (251.2 * progress) / 100}
-                    ></circle>
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center text-2xl font-bold">{progress}%</div>
+              {output && (
+                <div className="flex space-x-2">
+                  <Button variant="outline" size="sm" onClick={handleCopy} className="rounded-full">
+                    {isCopied ? <CheckCircle2 className="h-4 w-4 text-green-500 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
+                    Copy
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={handleRead} className="rounded-full">
+                    <Volume2 className="h-4 w-4 mr-2" />
+                    Listen
+                  </Button>
                 </div>
-                <p className="text-muted-foreground animate-pulse">Generating your masterpiece...</p>
-              </div>
-            ) : output ? (
-              <div className="bg-muted/50 rounded-lg p-4 h-full min-h-[200px] overflow-y-auto prose prose-sm dark:prose-invert max-w-none">
-                {tool.id === 'thumbnail-generator' && thumbnailUrl && (
-                  <div className="mb-6 space-y-8">
-                    <div className="space-y-4">
-                      <h3 className="text-xl font-bold border-b pb-2">Main Thumbnail</h3>
-                      <img src={thumbnailUrl} alt="Generated Thumbnail" className="w-full rounded-lg shadow-md" />
-                      
-                      <div className="flex flex-col sm:flex-row items-center gap-4 bg-background p-4 rounded-lg border">
-                        <Button 
-                          className="w-full" 
-                          onClick={async () => {
-                            try {
+              )}
+            </CardHeader>
+            <CardContent className="flex-1 pt-6">
+              {isLoading ? (
+                <div className="h-full min-h-[400px] flex flex-col items-center justify-center space-y-6">
+                  <div className="relative">
+                    <div className="w-20 h-20 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                    <Bot className="absolute inset-0 m-auto w-8 h-8 text-primary animate-pulse" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xl font-bold mb-2">AI is thinking...</p>
+                    <p className="text-muted-foreground">Analyzing your input and generating the best content.</p>
+                  </div>
+                </div>
+              ) : output ? (
+                <div className="bg-muted/30 rounded-2xl p-6 h-full min-h-[400px] overflow-y-auto prose prose-lg dark:prose-invert max-w-none border border-border/50">
+                  {tool.id === 'thumbnail-generator' && thumbnailUrl && (
+                    <div className="mb-8 space-y-6">
+                      <div className="relative group">
+                        <img src={thumbnailUrl} alt="Generated Thumbnail" className="w-full rounded-2xl shadow-2xl border-4 border-white" />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-2xl">
+                           <Button 
+                            variant="secondary"
+                            onClick={async () => {
                               const response = await fetch(thumbnailUrl);
                               const blob = await response.blob();
                               const url = window.URL.createObjectURL(blob);
                               const a = document.createElement('a');
-                              a.style.display = 'none';
                               a.href = url;
-                              a.download = `thumbnail-${resolution}.jpg`;
-                              document.body.appendChild(a);
+                              a.download = 'thumbnail.jpg';
                               a.click();
-                              window.URL.revokeObjectURL(url);
-                              toast.success('Download started!');
-                            } catch (err) {
-                              toast.error('Failed to download image. Try right-clicking to save.');
-                            }
-                          }}
-                        >
-                          <Download className="w-4 h-4 mr-2" />
-                          Download Main Thumbnail
-                        </Button>
-                      </div>
-                    </div>
-
-                    {recommendedUrls.length > 0 && (
-                      <div className="space-y-4 pt-4 border-t">
-                        <h3 className="text-xl font-bold">Recommended Alternatives</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          {recommendedUrls.map((url, idx) => (
-                            <div key={idx} className="space-y-3 bg-muted/30 p-3 rounded-lg border">
-                              <img src={url} alt={`Recommended ${idx + 1}`} className="w-full rounded-lg shadow-sm border" />
-                              <p className="text-xs text-muted-foreground line-clamp-3 italic">"{recommendedPrompts[idx]}"</p>
-                              <Button 
-                                variant="secondary" 
-                                size="sm" 
-                                className="w-full"
-                                onClick={async () => {
-                                  try {
-                                    const response = await fetch(url);
-                                    const blob = await response.blob();
-                                    const downloadUrl = window.URL.createObjectURL(blob);
-                                    const a = document.createElement('a');
-                                    a.style.display = 'none';
-                                    a.href = downloadUrl;
-                                    a.download = `alt-thumbnail-${idx + 1}.jpg`;
-                                    document.body.appendChild(a);
-                                    a.click();
-                                    window.URL.revokeObjectURL(downloadUrl);
-                                  } catch (err) {
-                                    toast.error('Failed to download image.');
-                                  }
-                                }}
-                              >
-                                <Download className="w-4 h-4 mr-2" />
-                                Download Alt {idx + 1}
-                              </Button>
-                            </div>
-                          ))}
+                            }}
+                          >
+                            <Download className="w-4 h-4 mr-2" /> Download HD
+                          </Button>
                         </div>
                       </div>
-                    )}
+                    </div>
+                  )}
+                  <ReactMarkdown>{output}</ReactMarkdown>
+                </div>
+              ) : (
+                <div className="h-full min-h-[400px] flex flex-col items-center justify-center text-muted-foreground border-4 border-dashed rounded-3xl p-12 text-center bg-muted/10">
+                  <div className="h-20 w-20 rounded-full bg-muted flex items-center justify-center mb-6">
+                    <Sparkles className="h-10 w-10 text-muted-foreground/50" />
                   </div>
-                )}
-                <ReactMarkdown>{output}</ReactMarkdown>
-              </div>
-            ) : (
-              <div className="h-full min-h-[200px] flex items-center justify-center text-muted-foreground border-2 border-dashed rounded-lg p-4 text-center">
-                Your generated content will appear here.
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  <h3 className="text-2xl font-bold mb-2 text-foreground">Ready to Create?</h3>
+                  <p className="max-w-xs mx-auto">Fill in the details on the left and click generate to see the magic happen.</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
-      {/* Comments Section */}
-      <div className="max-w-3xl mx-auto">
-        <div className="flex items-center space-x-2 mb-6">
-          <MessageSquare className="h-5 w-5" />
-          <h2 className="text-2xl font-bold">Community Reviews</h2>
+      {/* Community Section */}
+      <div className="max-w-4xl mx-auto pt-12 border-t">
+        <div className="flex items-center justify-between mb-10">
+          <div className="flex items-center space-x-3">
+            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+              <MessageSquare className="h-6 w-6 text-primary" />
+            </div>
+            <h2 className="text-3xl font-black tracking-tight">USER REVIEWS</h2>
+          </div>
+          {user && (
+            <Badge variant="secondary" className="px-4 py-1 rounded-full">
+              {comments.length} Reviews
+            </Badge>
+          )}
         </div>
 
         {user ? (
-          <Card className="mb-8">
+          <Card className="mb-12 border-none shadow-lg bg-primary/5">
             <CardContent className="pt-6">
-              <form onSubmit={handleAddComment} className="flex gap-4">
-                <Avatar>
+              <form onSubmit={handleAddComment} className="flex gap-6">
+                <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
                   <AvatarImage src={user.avatar} />
                   <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                 </Avatar>
-                <div className="flex-1 space-y-2">
-                  <Input 
-                    placeholder="Share your experience with this tool..." 
+                <div className="flex-1 space-y-3">
+                  <Textarea 
+                    placeholder="How was your experience with this tool?" 
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
+                    className="min-h-[100px] rounded-xl border-none shadow-inner bg-background/50 focus-visible:ring-primary"
                   />
                   <div className="flex justify-end">
-                    <Button type="submit" size="sm" disabled={!commentText.trim()}>Post Review</Button>
+                    <Button type="submit" size="lg" className="rounded-full px-8 font-bold" disabled={!commentText.trim()}>
+                      Post Review
+                    </Button>
                   </div>
                 </div>
               </form>
             </CardContent>
           </Card>
         ) : (
-          <Card className="mb-8 bg-muted/30">
-            <CardContent className="pt-6 text-center text-muted-foreground">
-              Please sign in to leave a review or comment.
+          <Card className="mb-12 bg-muted/30 border-dashed border-2">
+            <CardContent className="py-10 text-center">
+              <p className="text-muted-foreground text-lg mb-4">Sign in to share your thoughts with the community.</p>
+              <Button variant="outline" className="rounded-full px-8">Sign In Now</Button>
             </CardContent>
           </Card>
         )}
 
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {comments.map((comment) => (
-            <Card key={comment.id} className="bg-card">
-              <CardContent className="p-4 flex gap-4">
-                <Avatar>
-                  <AvatarImage src={comment.userAvatar} />
-                  <AvatarFallback>{comment.userName.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <div className="flex items-center space-x-2 mb-1">
-                    <span className="font-semibold text-sm">{comment.userName}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(comment.createdAt).toLocaleDateString()}
-                    </span>
+            <Card key={comment.id} className="bg-card border-none shadow-sm hover:shadow-md transition-all">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={comment.userAvatar} />
+                      <AvatarFallback>{comment.userName.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-bold text-sm">{comment.userName}</p>
+                      <div className="flex gap-0.5">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className={cn("w-3 h-3", i < (comment.rating || 5) ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/30")} />
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-sm text-foreground/90">{comment.text}</p>
+                  <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">
+                    {new Date(comment.createdAt).toLocaleDateString()}
+                  </span>
                 </div>
+                <p className="text-sm text-foreground/80 leading-relaxed italic">"{comment.text}"</p>
               </CardContent>
             </Card>
           ))}
@@ -778,3 +520,4 @@ export function ToolPage() {
     </div>
   );
 }
+

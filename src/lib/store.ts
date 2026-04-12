@@ -14,6 +14,7 @@ export interface Comment {
   userName: string;
   userAvatar: string;
   text: string;
+  rating: number;
   createdAt: number;
 }
 
@@ -34,8 +35,10 @@ interface AppState {
   logout: () => void;
   updateAvatar: (avatarUrl: string) => void;
   updateProfile: (name: string, avatarUrl: string) => void;
-  addComment: (text: string) => void;
+  addComment: (text: string, rating: number) => void;
+  deleteComment: (id: string) => void;
   addHistory: (toolId: string, input: string, output: string) => void;
+  deleteHistory: (id: string) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -49,6 +52,7 @@ export const useAppStore = create<AppState>()(
           userName: 'Sarah (Creator)',
           userAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
           text: 'This platform is a lifesaver! The viral hook generator completely changed my TikTok strategy.',
+          rating: 5,
           createdAt: Date.now() - 86400000,
         },
         {
@@ -57,6 +61,7 @@ export const useAppStore = create<AppState>()(
           userName: 'MikeTech',
           userAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mike',
           text: 'The SEO title generator is insanely good. Finally hitting the algorithm right.',
+          rating: 4,
           createdAt: Date.now() - 3600000,
         }
       ],
@@ -102,7 +107,7 @@ export const useAppStore = create<AppState>()(
         });
       },
       
-      addComment: (text) => {
+      addComment: (text, rating) => {
         const { user } = get();
         if (!user) return;
         
@@ -112,10 +117,17 @@ export const useAppStore = create<AppState>()(
           userName: user.name,
           userAvatar: user.avatar,
           text,
+          rating,
           createdAt: Date.now(),
         };
         
         set((state) => ({ comments: [newComment, ...state.comments] }));
+      },
+
+      deleteComment: (id) => {
+        set((state) => ({
+          comments: state.comments.filter(c => c.id !== id)
+        }));
       },
       
       addHistory: (toolId, input, output) => {
@@ -131,6 +143,12 @@ export const useAppStore = create<AppState>()(
         };
         
         set((state) => ({ history: [newItem, ...state.history] }));
+      },
+
+      deleteHistory: (id) => {
+        set((state) => ({
+          history: state.history.filter(h => h.id !== id)
+        }));
       }
     }),
     {
