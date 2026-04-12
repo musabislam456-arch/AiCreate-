@@ -159,11 +159,11 @@ export function Home() {
           </div>
           <div className="flex gap-4">
             <Dialog open={isReviewModalOpen} onOpenChange={setIsReviewModalOpen}>
-              <DialogTrigger asChild>
+              <DialogTrigger render={
                 <Button className="rounded-full px-8 h-12 font-bold">
                   <Plus className="w-5 h-5 mr-2" /> Write a Review
                 </Button>
-              </DialogTrigger>
+              } />
               <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                   <DialogTitle className="text-2xl font-bold">Share your experience</DialogTitle>

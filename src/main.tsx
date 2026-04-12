@@ -8,21 +8,24 @@ import { AdvancedToolPage } from './pages/AdvancedToolPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { ScrollToTop } from './components/ScrollToTop';
+import { StoreInitializer } from './components/StoreInitializer';
 import './index.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
-      <ScrollToTop />
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="tool/:id" element={<ToolPage />} />
-          <Route path="advanced/:id" element={<AdvancedToolPage />} />
-          <Route path="history" element={<HistoryPage />} />
-          <Route path="profile" element={<ProfilePage />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <StoreInitializer>
+      <BrowserRouter>
+        <ScrollToTop />
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="tool/:id" element={<ToolPage />} />
+            <Route path="advanced/:id" element={<AdvancedToolPage />} />
+            <Route path="history" element={<HistoryPage />} />
+            <Route path="profile" element={<ProfilePage />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </StoreInitializer>
   </StrictMode>,
 );

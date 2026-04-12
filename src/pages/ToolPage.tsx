@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Loader2, Copy, CheckCircle2, MessageSquare, ArrowLeft, ImagePlus, Download, Share2, Briefcase, TrendingDown, Film, MessageCircle, TrendingUp, CalendarDays, RefreshCw, Cpu, Volume2, Wand2, Bot, Sparkles, Star } from 'lucide-react';
 import { Badge } from '../components/ui/badge';
 import { cn } from '../lib/utils';
+import * as Icons from 'lucide-react';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
@@ -62,7 +63,7 @@ export function ToolPage() {
     return <Navigate to="/" replace />;
   }
 
-  const ToolIcon = tool.icon;
+  const ToolIcon = (Icons as any)[tool.icon] || Icons.Wand2;
 
   const getToolColor = () => {
     switch (tool.id) {
@@ -204,7 +205,7 @@ export function ToolPage() {
     e.preventDefault();
     if (!commentText.trim()) return;
     
-    addComment(commentText);
+    addComment(commentText, 5);
     setCommentText('');
     toast.success('Comment added!');
   };

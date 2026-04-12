@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Loader2, Copy, CheckCircle2, Upload, X, Video, ArrowLeft, BarChart2, Users, Eye, Globe, DollarSign, Trophy, Cpu, Volume2, Plus, Bot } from 'lucide-react';
 import { Badge } from '../components/ui/badge';
 import { cn } from '../lib/utils';
+import * as Icons from 'lucide-react';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import { Input } from '../components/ui/input';
@@ -72,7 +73,7 @@ export function AdvancedToolPage() {
     return <Navigate to="/" replace />;
   }
 
-  const ToolIcon = tool.icon;
+  const ToolIcon = (Icons as any)[tool.icon] || Icons.Wand2;
 
   const getToolColor = () => {
     switch (tool.id) {
