@@ -36,7 +36,7 @@ export function AdvancedToolPage() {
   const { addHistory } = useAppStore();
   const [input, setInput] = useState('');
   const [language, setLanguage] = useState('English');
-  const [selectedAIModel, setSelectedAIModel] = useState<AIModel>('Auto');
+  const [selectedAIModel, setSelectedAIModel] = useState<AIModel>('ChatGPT');
   const [output, setOutput] = useState<any>('');
   const [isLoading, setIsLoading] = useState(false);
   const [isCopied, setIsCopied] = useState<Record<string, boolean>>({});
@@ -57,6 +57,7 @@ export function AdvancedToolPage() {
   const [scriptLength, setScriptLength] = useState('1min');
   const [customLengthValue, setCustomLengthValue] = useState('');
   const [customLengthUnit, setCustomLengthUnit] = useState('Minutes');
+  const [scriptFormat, setScriptFormat] = useState<'Full' | 'Paragraph'>('Full');
 
   // Sequential generation state
   const [generationMode, setGenerationMode] = useState<'Full' | 'Parts'>('Full');
@@ -170,7 +171,7 @@ export function AdvancedToolPage() {
           setCurrentPart(1);
           result = partResult;
         } else {
-          result = await generateAdvancedScript(input, category, selectedTypes, length, language, selectedAIModel);
+          result = await generateAdvancedScript(input, category, selectedTypes, length, language, selectedAIModel, scriptFormat);
           setGeneratedParts([result]);
           setCurrentPart(0);
         }
@@ -565,6 +566,19 @@ export function AdvancedToolPage() {
 
             {tool.id === 'advanced-script-writer' && (
               <>
+                <div className="space-y-2">
+                  <Label>Script Format</Label>
+                  <Select value={scriptFormat} onValueChange={(v: any) => setScriptFormat(v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Format" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Full">Full Details (Headings, Visuals, Timestamps)</SelectItem>
+                      <SelectItem value="Paragraph">Single Paragraph (Continuous Narrative)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div className="space-y-2">
                   <Label>Generation Mode</Label>
                   <Select value={generationMode} onValueChange={(v: any) => setGenerationMode(v)}>

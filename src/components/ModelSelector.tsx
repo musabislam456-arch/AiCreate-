@@ -20,22 +20,22 @@ export function ModelSelector({ value, onChange, className }: ModelSelectorProps
           <SelectValue placeholder="Select AI Model" />
         </SelectTrigger>
         <SelectContent>
+          <SelectItem value="ChatGPT">
+            <div className="flex items-center gap-2">
+              <Brain className="w-4 h-4 text-green-500" />
+              <span>ChatGPT (Default - Fast)</span>
+            </div>
+          </SelectItem>
           <SelectItem value="Auto">
             <div className="flex items-center gap-2">
               <Zap className="w-4 h-4 text-yellow-500" />
-              <span>Auto Mode (Smart)</span>
+              <span>Auto Mode (Smart Fallback)</span>
             </div>
           </SelectItem>
           <SelectItem value="Gemini">
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-blue-500" />
               <span>Gemini (High Quality)</span>
-            </div>
-          </SelectItem>
-          <SelectItem value="ChatGPT">
-            <div className="flex items-center gap-2">
-              <Brain className="w-4 h-4 text-green-500" />
-              <span>ChatGPT (Puter)</span>
             </div>
           </SelectItem>
           <SelectItem value="Claude">

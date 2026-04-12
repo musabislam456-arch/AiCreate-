@@ -28,7 +28,7 @@ export function FloatingChat() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [language, setLanguage] = useState('English');
-  const [selectedAIModel, setSelectedAIModel] = useState<AIModel>('Auto');
+  const [selectedAIModel, setSelectedAIModel] = useState<AIModel>('ChatGPT');
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -81,9 +81,11 @@ export function FloatingChat() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Auto">Auto</SelectItem>
-                  <SelectItem value="Gemini">Gemini</SelectItem>
                   <SelectItem value="ChatGPT">GPT-4</SelectItem>
+                  <SelectItem value="Gemini">Gemini</SelectItem>
                   <SelectItem value="Claude">Claude</SelectItem>
+                  <SelectItem value="DeepSeek">DeepSeek</SelectItem>
+                  <SelectItem value="DeepSeek-Reasoner">Reasoner</SelectItem>
                   <SelectItem value="Grok">Grok</SelectItem>
                 </SelectContent>
               </Select>

@@ -28,9 +28,11 @@ export function MicButton({ onTranscript, className }: MicButtonProps) {
       rec.onerror = (event: any) => {
         console.error('Speech recognition error', event.error);
         if (event.error === 'not-allowed') {
-          toast.error('Microphone access denied. Please click the lock icon in your browser address bar to allow microphone permissions, then try again.');
+          toast.error('Microphone access denied. Please allow microphone permissions.');
+        } else if (event.error === 'no-speech') {
+          // Ignore no-speech errors as they are common
         } else {
-          toast.error(`Speech recognition error: ${event.error}`);
+          toast.error(`Mic error: ${event.error}`);
         }
         setIsListening(false);
       };
@@ -41,25 +43,37 @@ export function MicButton({ onTranscript, className }: MicButtonProps) {
 
       setRecognition(rec);
     }
+
+    return () => {
+      if (recognition) {
+        recognition.abort();
+      }
+    };
   }, [onTranscript]);
 
   const toggleListening = (e: React.MouseEvent) => {
     e.preventDefault();
     if (!recognition) {
-      toast.error('Speech recognition is not supported in this browser.');
+      toast.error('Speech recognition not supported.');
       return;
     }
     
     if (isListening) {
-      recognition.stop();
+      try {
+        recognition.stop();
+      } catch (err) {
+        console.error('Error stopping recognition:', err);
+      }
       setIsListening(false);
     } else {
       try {
         recognition.start();
         setIsListening(true);
-        toast.info('Listening... Speak now.');
-      } catch (e) {
-        console.error(e);
+        toast.info('Listening...');
+      } catch (err) {
+        console.error('Error starting recognition:', err);
+        // If it's already started, just update state
+        setIsListening(true);
       }
     }
   };
