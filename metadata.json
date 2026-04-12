@@ -1,0 +1,7 @@
+{
+  "name": "Remix: CreatorAI",
+  "description": "A complete, production-ready AI tools website for content creators.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
