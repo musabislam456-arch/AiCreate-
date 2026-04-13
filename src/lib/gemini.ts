@@ -251,15 +251,22 @@ export async function analyzeChannel(statsOrUrl: string, language: string = 'Eng
     Format:
     {
       "channelName": "string",
-      "subscribers": "string",
+      "totalSubscribers": "string",
       "totalViews": "string",
-      "mostViewedVideo": "string",
-      "topAudienceCountry": "string",
-      "isMonetized": boolean,
-      "youtubeRanking": "string",
-      "similarChannels": ["string"],
-      "growthPlan": "string",
-      "historicalData": [{"month": "string", "subscribers": number, "views": number, "audienceRetention": number}]
+      "totalVideos": "string",
+      "mostViewedVideo": { "title": "string", "url": "string" },
+      "monetizationStatus": "Monetized" | "Not Monetized",
+      "audienceInsights": {
+        "topCountries": [
+          { "country": "string", "percentage": number }
+        ]
+      },
+      "similarChannels": [
+        { "name": "string", "url": "string" }
+      ],
+      "historicalData": [
+        { "month": "string", "subscribers": number, "views": number }
+      ]
     }
 
     Language: ${language}

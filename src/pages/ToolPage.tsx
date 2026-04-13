@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Navigate, useNavigate } from 'react-router-dom';
 import { CORE_TOOLS } from '../lib/tools-data';
 import { generateContent, generateContentWithSearch, textToSpeech, AIModel } from '../lib/gemini';
@@ -27,6 +27,62 @@ const LANGUAGES = [
   "Russian", "Bengali", "Indonesian", "Korean", "Italian"
 ];
 
+const THUMBNAIL_CATEGORIES = [
+  "Cinematic", "Gaming Pro", "Cyberpunk", "Minimalist", 
+  "3D Render", "Retro/Vintage", "Horror", "Travel Vlog", 
+  "Educational", "Bright & Vibrant", "Dark & Moody"
+];
+
+const RESOLUTIONS = [
+  { label: "HD (1280x720)", value: "1280x720" },
+  { label: "Full HD (1920x1080)", value: "1920x1080" },
+  { label: "2K (2560x1440)", value: "2560x1440" },
+  { label: "4K (3840x2160)", value: "3840x2160" },
+  { label: "8K (7680x4320)", value: "7680x4320" }
+];
+
+const IMAGE_MODELS = [
+  { label: "Flux (Default)", value: "flux" },
+  { label: "Anima-Banna", value: "anima-banna" },
+  { label: "Turbo", value: "turbo" },
+  { label: "Any Dark", value: "any-dark" }
+];
+
+const CircularProgress = ({ progress }: { progress: number }) => {
+  const radius = 36;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (progress / 100) * circumference;
+
+  return (
+    <div className="relative inline-flex items-center justify-center">
+      <svg className="w-24 h-24 transform -rotate-90">
+        <circle
+          className="text-muted/20"
+          strokeWidth="8"
+          stroke="currentColor"
+          fill="transparent"
+          r={radius}
+          cx="48"
+          cy="48"
+        />
+        <circle
+          className="text-primary transition-all duration-300 ease-in-out"
+          strokeWidth="8"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+          stroke="currentColor"
+          fill="transparent"
+          r={radius}
+          cx="48"
+          cy="48"
+        />
+      </svg>
+      <span className="absolute text-xl font-black text-primary">{Math.round(progress)}%</span>
+    </div>
+  );
+};
+
 export function ToolPage() {
   const { id } = useParams<{ id: string }>();
   const tool = CORE_TOOLS.find(t => t.id === id);
@@ -36,8 +92,8 @@ export function ToolPage() {
   const [input, setInput] = useState('');
   const [extraInput1, setExtraInput1] = useState('');
   const [extraInput2, setExtraInput2] = useState('');
-  const [language, setLanguage] = useState('English');
-  const [selectedAIModel, setSelectedAIModel] = useState<AIModel>('Auto');
+  const [language, setLanguage] = useState(() => localStorage.getItem('creatorai_language') || 'English');
+  const [selectedAIModel, setSelectedAIModel] = useState<AIModel>(() => (localStorage.getItem('creatorai_model') as AIModel) || 'Auto');
   const [output, setOutput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
@@ -51,6 +107,14 @@ export function ToolPage() {
   const [thumbnailPrompt, setThumbnailPrompt] = useState('');
   const [recommendedUrls, setRecommendedUrls] = useState<string[]>([]);
   const [recommendedPrompts, setRecommendedPrompts] = useState<string[]>([]);
+
+  useEffect(() => {
+    localStorage.setItem('creatorai_language', language);
+  }, [language]);
+
+  useEffect(() => {
+    localStorage.setItem('creatorai_model', selectedAIModel);
+  }, [selectedAIModel]);
 
   // Content Scheduler specific states
   const [scheduleCategory, setScheduleCategory] = useState('Gaming');
@@ -116,9 +180,15 @@ export function ToolPage() {
       }
       
       if (tool.id === 'thumbnail-generator') {
-        const prompts = result.split('|||').map(p => p.trim()).filter(p => p);
+        // Robust parsing: find all blocks separated by ||| or just take lines
+        let prompts = result.split('|||').map(p => p.trim()).filter(p => p);
+        if (prompts.length < 2) {
+          // Fallback: try splitting by newlines if ||| is missing
+          prompts = result.split('\n').map(p => p.trim()).filter(p => p.length > 20);
+        }
+        
         const mainPrompt = prompts[0] || result;
-        const altPrompts = prompts.slice(1, 3);
+        const altPrompts = prompts.slice(1, 4); // Take up to 3 alternatives
         
         setThumbnailPrompt(mainPrompt);
         setRecommendedPrompts(altPrompts);
@@ -127,6 +197,7 @@ export function ToolPage() {
         
         const createImageUrl = (p: string) => {
           const seed = Math.floor(Math.random() * 1000000);
+          // Map anima-banna to animagine for better quality anime/stylized results
           const actualModel = aiModel === 'anima-banna' ? 'animagine' : aiModel;
           return `https://image.pollinations.ai/prompt/${encodeURIComponent(p)}?width=${width}&height=${height}&nologo=true&model=${actualModel}&seed=${seed}`;
         };
@@ -137,11 +208,13 @@ export function ToolPage() {
         // Simulate progress while image loads
         let currentProgress = 0;
         const progressInterval = setInterval(() => {
-          currentProgress += 5;
-          if (currentProgress <= 90) {
-            setProgress(currentProgress);
+          currentProgress += Math.random() * 15;
+          if (currentProgress >= 99) {
+            currentProgress = 99;
+            clearInterval(progressInterval);
           }
-        }, 300);
+          setProgress(currentProgress);
+        }, 400);
 
         const loadImageWithRetry = async (url: string, retries = 3) => {
           for (let i = 0; i < retries; i++) {
@@ -287,6 +360,52 @@ export function ToolPage() {
                   </div>
                 )}
 
+                {tool.id === 'thumbnail-generator' && (
+                  <>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-bold">Thumbnail Style</Label>
+                      <Select value={extraInput1} onValueChange={setExtraInput1}>
+                        <SelectTrigger className="rounded-xl">
+                          <SelectValue placeholder="Select Style" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {THUMBNAIL_CATEGORIES.map(cat => (
+                            <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-sm font-bold">Resolution</Label>
+                        <Select value={resolution} onValueChange={setResolution}>
+                          <SelectTrigger className="rounded-xl">
+                            <SelectValue placeholder="Resolution" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {RESOLUTIONS.map(res => (
+                              <SelectItem key={res.value} value={res.value}>{res.label}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-sm font-bold">AI Model</Label>
+                        <Select value={aiModel} onValueChange={setAiModel}>
+                          <SelectTrigger className="rounded-xl">
+                            <SelectValue placeholder="Model" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {IMAGE_MODELS.map(m => (
+                              <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </>
+                )}
+
                 {tool.id === 'viral-hook-generator' && (
                   <div className="space-y-2">
                     <Label className="text-sm font-bold">Hook Tone</Label>
@@ -396,19 +515,25 @@ export function ToolPage() {
             <CardContent className="flex-1 pt-6">
               {isLoading ? (
                 <div className="h-full min-h-[400px] flex flex-col items-center justify-center space-y-6">
-                  <div className="relative">
-                    <div className="w-20 h-20 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-                    <Bot className="absolute inset-0 m-auto w-8 h-8 text-primary animate-pulse" />
-                  </div>
+                  {tool.id === 'thumbnail-generator' ? (
+                    <CircularProgress progress={progress} />
+                  ) : (
+                    <div className="relative">
+                      <div className="w-20 h-20 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                      <Bot className="absolute inset-0 m-auto w-8 h-8 text-primary animate-pulse" />
+                    </div>
+                  )}
                   <div className="text-center">
                     <p className="text-xl font-bold mb-2">AI is thinking...</p>
-                    <p className="text-muted-foreground">Analyzing your input and generating the best content.</p>
+                    <p className="text-muted-foreground">
+                      {tool.id === 'thumbnail-generator' ? 'Generating your high-quality thumbnail...' : 'Analyzing your input and generating the best content.'}
+                    </p>
                   </div>
                 </div>
               ) : output ? (
                 <div className="bg-muted/30 rounded-2xl p-6 h-full min-h-[400px] overflow-y-auto prose prose-lg dark:prose-invert max-w-none border border-border/50">
                   {tool.id === 'thumbnail-generator' && thumbnailUrl && (
-                    <div className="mb-8 space-y-6">
+                    <div className="mb-8 space-y-8">
                       <div className="relative group">
                         <img src={thumbnailUrl} alt="Generated Thumbnail" className="w-full rounded-2xl shadow-2xl border-4 border-white" />
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-2xl">
@@ -428,6 +553,34 @@ export function ToolPage() {
                           </Button>
                         </div>
                       </div>
+
+                      {recommendedUrls.length > 0 && (
+                        <div className="pt-8 border-t">
+                          <h3 className="text-xl font-black mb-6 flex items-center gap-2">
+                            <Sparkles className="w-5 h-5 text-primary" />
+                            RECOMMENDED VARIATIONS
+                          </h3>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            {recommendedUrls.map((url, idx) => (
+                              <div key={idx} className="space-y-3">
+                                <div className="relative group aspect-video">
+                                  <img src={url} alt={`Variation ${idx + 1}`} className="w-full h-full object-cover rounded-xl shadow-lg border-2 border-white" />
+                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-xl">
+                                    <Button 
+                                      variant="secondary" 
+                                      size="sm"
+                                      onClick={() => setThumbnailUrl(url)}
+                                    >
+                                      <RefreshCw className="w-4 h-4 mr-2" /> Use This
+                                    </Button>
+                                  </div>
+                                </div>
+                                <p className="text-xs text-muted-foreground line-clamp-2 italic">"{recommendedPrompts[idx]}"</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                   <ReactMarkdown>{output}</ReactMarkdown>

@@ -12,8 +12,8 @@ export function YoutubeTitleGeneratorSEO() {
         <meta name="keywords" content="youtube title generator ai free, free AI tools for YouTubers, AI tools for creators, best ai tools for creators 2026" />
       </Helmet>
 
-      <Button variant="ghost" asChild className="mb-8 -ml-4 text-muted-foreground hover:text-primary">
-        <Link to="/">
+      <Button variant="ghost" className="mb-8 -ml-4 text-muted-foreground hover:text-primary">
+        <Link to="/" className="flex items-center">
           <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
         </Link>
       </Button>
@@ -34,7 +34,7 @@ export function YoutubeTitleGeneratorSEO() {
             clicks on your video or scrolls past it. In 2026, the competition is fiercer than ever, and using 
             <strong>AI tools for creators</strong> is no longer optional—it's a necessity for growth.
           </p>
-          <Button asChild size="lg" className="mt-6 rounded-full font-bold">
+          <Button size="lg" className="mt-6 rounded-full font-bold">
             <Link to="/tool/seo-title-generator">Try the Title Generator Now</Link>
           </Button>
         </div>
@@ -74,7 +74,7 @@ export function YoutubeTitleGeneratorSEO() {
         <div className="my-16 p-8 bg-muted rounded-2xl text-center">
           <h3 className="text-2xl font-bold mb-4">Ready to boost your views?</h3>
           <p className="mb-8">Join thousands of successful YouTubers using CreatorAI to dominate their niche.</p>
-          <Button asChild size="lg" className="rounded-full px-12 h-14 text-lg font-bold">
+          <Button size="lg" className="rounded-full px-12 h-14 text-lg font-bold">
             <Link to="/tool/seo-title-generator">Generate Viral Titles Now</Link>
           </Button>
         </div>

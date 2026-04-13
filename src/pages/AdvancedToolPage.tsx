@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Navigate, useNavigate, Link } from 'react-router-dom';
 import { ADVANCED_TOOLS, CORE_TOOLS } from '../lib/tools-data';
 import { analyzeThumbnails, analyzeChannel, generateMetadata, generateContent, generateVisualPrompts, generateAdvancedScript, generateScriptPart, textToSpeech, AIModel } from '../lib/gemini';
@@ -27,9 +27,24 @@ const LANGUAGES = [
   "Russian", "Bengali", "Indonesian", "Korean", "Italian"
 ];
 
-const SCRIPT_TYPES = [
-  "Engaging", "Curiosity", "Audience Retention", "Suspense", 
-  "Twists", "Amazing", "Call to Action", "Emotional"
+const SCRIPT_CATEGORIES = [
+  "Technology", "Education", "Entertainment", "Gaming", 
+  "Motivation", "News", "Business", "Storytelling"
+];
+
+const SCRIPT_STYLES = [
+  "Engaging", "Curiosity Driven", "High Retention", "Suspense", 
+  "Twist-Based", "Emotional", "Storytelling", "Educational", "Viral Style"
+];
+
+const SCRIPT_LENGTHS = [
+  { label: "15 sec", value: "15s" },
+  { label: "30 sec", value: "30s" },
+  { label: "1 min", value: "1m" },
+  { label: "2 min", value: "2m" },
+  { label: "3 min", value: "3m" },
+  { label: "4 min", value: "4m" },
+  { label: "Custom", value: "custom" }
 ];
 
 export function AdvancedToolPage() {
@@ -39,8 +54,8 @@ export function AdvancedToolPage() {
   
   const { addHistory } = useAppStore();
   const [input, setInput] = useState('');
-  const [language, setLanguage] = useState('English');
-  const [selectedAIModel, setSelectedAIModel] = useState<AIModel>('ChatGPT');
+  const [language, setLanguage] = useState(() => localStorage.getItem('creatorai_language') || 'English');
+  const [selectedAIModel, setSelectedAIModel] = useState<AIModel>(() => (localStorage.getItem('creatorai_model') as AIModel) || 'ChatGPT');
   const [output, setOutput] = useState<any>('');
   const [isLoading, setIsLoading] = useState(false);
   const [isCopied, setIsCopied] = useState<Record<string, boolean>>({});
@@ -51,14 +66,17 @@ export function AdvancedToolPage() {
   // Script to Visuals state
   const [visualDuration, setVisualDuration] = useState('5s');
   const [customDuration, setCustomDuration] = useState('');
-  const [promptLanguage, setPromptLanguage] = useState('English');
-  const [voiceoverLanguage, setVoiceoverLanguage] = useState('English');
+  const [promptLanguage, setPromptLanguage] = useState(() => localStorage.getItem('creatorai_prompt_lang') || 'English');
+  const [voiceoverLanguage, setVoiceoverLanguage] = useState(() => localStorage.getItem('creatorai_voice_lang') || 'English');
 
   // Advanced Script Writer state
-  const [scriptCategory, setScriptCategory] = useState('Gaming');
+  const [scriptCategory, setScriptCategory] = useState(() => localStorage.getItem('creatorai_script_cat') || 'Gaming');
   const [customCategory, setCustomCategory] = useState('');
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [scriptLength, setScriptLength] = useState('1min');
+  const [selectedTypes, setSelectedTypes] = useState<string[]>(() => {
+    const saved = localStorage.getItem('creatorai_script_types');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [scriptLength, setScriptLength] = useState(() => localStorage.getItem('creatorai_script_len') || '1m');
   const [customLengthValue, setCustomLengthValue] = useState('');
   const [customLengthUnit, setCustomLengthUnit] = useState('Minutes');
   const [scriptFormat, setScriptFormat] = useState<'Full' | 'Paragraph'>('Full');
@@ -69,6 +87,35 @@ export function AdvancedToolPage() {
   const [customParts, setCustomParts] = useState('');
   const [currentPart, setCurrentPart] = useState(0);
   const [generatedParts, setGeneratedParts] = useState<string[]>([]);
+
+  // Save preferences to localStorage when they change
+  useEffect(() => {
+    localStorage.setItem('creatorai_language', language);
+  }, [language]);
+
+  useEffect(() => {
+    localStorage.setItem('creatorai_model', selectedAIModel);
+  }, [selectedAIModel]);
+
+  useEffect(() => {
+    localStorage.setItem('creatorai_prompt_lang', promptLanguage);
+  }, [promptLanguage]);
+
+  useEffect(() => {
+    localStorage.setItem('creatorai_voice_lang', voiceoverLanguage);
+  }, [voiceoverLanguage]);
+
+  useEffect(() => {
+    localStorage.setItem('creatorai_script_cat', scriptCategory);
+  }, [scriptCategory]);
+
+  useEffect(() => {
+    localStorage.setItem('creatorai_script_types', JSON.stringify(selectedTypes));
+  }, [selectedTypes]);
+
+  useEffect(() => {
+    localStorage.setItem('creatorai_script_len', scriptLength);
+  }, [scriptLength]);
 
   if (!tool) {
     return <Navigate to="/" replace />;
@@ -111,17 +158,17 @@ export function AdvancedToolPage() {
     setImages(prev => prev.filter((_, i) => i !== index));
   };
 
-  const toggleScriptType = (type: string) => {
+  const toggleScriptStyle = (style: string) => {
     setSelectedTypes(prev => 
-      prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
+      prev.includes(style) ? prev.filter(s => s !== style) : [...prev, style]
     );
   };
 
-  const selectAllTypes = () => {
-    if (selectedTypes.length === SCRIPT_TYPES.length) {
+  const selectAllStyles = () => {
+    if (selectedTypes.length === SCRIPT_STYLES.length) {
       setSelectedTypes([]);
     } else {
-      setSelectedTypes([...SCRIPT_TYPES]);
+      setSelectedTypes([...SCRIPT_STYLES]);
     }
   };
 
@@ -371,14 +418,14 @@ export function AdvancedToolPage() {
           <strong>Note:</strong> Statistics are gathered via AI web search and may be estimates. For exact real-time analytics, use YouTube Studio.
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card className="bg-blue-500/5 border-blue-500/20">
             <CardContent className="p-6 flex flex-col items-center justify-center text-center">
               <div className="p-3 bg-blue-500/10 rounded-full mb-3">
                 <Users className="h-6 w-6 text-blue-500" />
               </div>
               <p className="text-sm font-medium text-muted-foreground mb-1">Subscribers</p>
-              <p className="font-bold text-2xl tracking-tight">{output.subscribers}</p>
+              <p className="font-bold text-2xl tracking-tight">{output.totalSubscribers}</p>
             </CardContent>
           </Card>
           <Card className="bg-green-500/5 border-green-500/20">
@@ -393,10 +440,10 @@ export function AdvancedToolPage() {
           <Card className="bg-purple-500/5 border-purple-500/20">
             <CardContent className="p-6 flex flex-col items-center justify-center text-center">
               <div className="p-3 bg-purple-500/10 rounded-full mb-3">
-                <Globe className="h-6 w-6 text-purple-500" />
+                <Video className="h-6 w-6 text-purple-500" />
               </div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">Top Country</p>
-              <p className="font-bold text-xl tracking-tight">{output.topAudienceCountry}</p>
+              <p className="text-sm font-medium text-muted-foreground mb-1">Total Videos</p>
+              <p className="font-bold text-2xl tracking-tight">{output.totalVideos}</p>
             </CardContent>
           </Card>
           <Card className="bg-yellow-500/5 border-yellow-500/20">
@@ -404,77 +451,84 @@ export function AdvancedToolPage() {
               <div className="p-3 bg-yellow-500/10 rounded-full mb-3">
                 <DollarSign className="h-6 w-6 text-yellow-500" />
               </div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">Monetized</p>
-              <p className="font-bold text-xl tracking-tight">{output.isMonetized ? 'Yes' : 'No'}</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-orange-500/5 border-orange-500/20">
-            <CardContent className="p-6 flex flex-col items-center justify-center text-center">
-              <div className="p-3 bg-orange-500/10 rounded-full mb-3">
-                <Trophy className="h-6 w-6 text-orange-500" />
-              </div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">Ranking</p>
-              <p className="font-bold text-xl tracking-tight">{output.youtubeRanking}</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-red-500/5 border-red-500/20">
-            <CardContent className="p-6 flex flex-col items-center justify-center text-center">
-              <div className="p-3 bg-red-500/10 rounded-full mb-3">
-                <Video className="h-6 w-6 text-red-500" />
-              </div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">Top Video</p>
-              <p className="font-bold text-sm line-clamp-2 px-2">{output.mostViewedVideo}</p>
+              <p className="text-sm font-medium text-muted-foreground mb-1">Monetization</p>
+              <p className="font-bold text-xl tracking-tight">{output.monetizationStatus}</p>
             </CardContent>
           </Card>
         </div>
 
-        <div className="bg-muted/30 rounded-lg p-4 border">
-          <h3 className="font-semibold text-lg mb-4">Historical Data (Last 6 Months)</h3>
-          <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={output.historicalData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                <XAxis dataKey="month" />
-                <YAxis yAxisId="left" tickFormatter={(value) => new Intl.NumberFormat('en-US', { notation: "compact", compactDisplay: "short" }).format(value)} />
-                <YAxis yAxisId="right" orientation="right" tickFormatter={(value) => new Intl.NumberFormat('en-US', { notation: "compact", compactDisplay: "short" }).format(value)} />
-                <Tooltip formatter={(value: number) => new Intl.NumberFormat('en-US').format(value)} />
-                <Legend />
-                <Line yAxisId="left" type="monotone" dataKey="subscribers" stroke="#3b82f6" strokeWidth={3} name="Subscribers" dot={{ r: 4 }} activeDot={{ r: 8 }} />
-                <Line yAxisId="right" type="monotone" dataKey="views" stroke="#22c55e" strokeWidth={3} name="Views" dot={{ r: 4 }} activeDot={{ r: 8 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        <div className="bg-muted/30 rounded-lg p-4 border">
-          <h3 className="font-semibold text-lg mb-4">Audience Retention Trend</h3>
-          <div className="h-[200px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={output.historicalData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                <XAxis dataKey="month" />
-                <YAxis tickFormatter={(value) => `${value}%`} />
-                <Tooltip formatter={(value: number) => `${value}%`} />
-                <Bar dataKey="audienceRetention" fill="#8b5cf6" radius={[4, 4, 0, 0]} name="Retention (%)" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-muted/30 rounded-lg p-4 border">
-            <h3 className="font-semibold text-lg mb-2">Similar Channels</h3>
-            <ul className="list-disc pl-5 space-y-1">
-              {output.similarChannels?.map((channel: string, i: number) => (
-                <li key={i} className="text-sm">{channel}</li>
-              ))}
-            </ul>
-          </div>
-          <div className="bg-muted/30 rounded-lg p-4 border">
-            <h3 className="font-semibold text-lg mb-2">Growth Plan</h3>
-            <div className="prose prose-sm dark:prose-invert max-w-none">
-              <ReactMarkdown>{output.growthPlan}</ReactMarkdown>
+        <Card className="bg-red-500/5 border-red-500/20">
+          <CardContent className="p-6 flex items-center gap-4">
+            <div className="p-3 bg-red-500/10 rounded-full">
+              <Trophy className="h-6 w-6 text-red-500" />
             </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground mb-1">Most Viewed Video</p>
+              <a href={output.mostViewedVideo?.url} target="_blank" rel="noopener noreferrer" className="font-bold text-lg hover:underline text-primary">
+                {output.mostViewedVideo?.title}
+              </a>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-muted/30 rounded-lg p-4 border">
+            <h3 className="font-semibold text-lg mb-4">Growth Trend (Subscribers & Views)</h3>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={output.historicalData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                  <XAxis dataKey="month" />
+                  <YAxis yAxisId="left" tickFormatter={(value) => new Intl.NumberFormat('en-US', { notation: "compact", compactDisplay: "short" }).format(value)} />
+                  <YAxis yAxisId="right" orientation="right" tickFormatter={(value) => new Intl.NumberFormat('en-US', { notation: "compact", compactDisplay: "short" }).format(value)} />
+                  <Tooltip formatter={(value: number) => new Intl.NumberFormat('en-US').format(value)} />
+                  <Legend />
+                  <Line yAxisId="left" type="monotone" dataKey="subscribers" stroke="#3b82f6" strokeWidth={3} name="Subscribers" dot={{ r: 4 }} activeDot={{ r: 8 }} />
+                  <Line yAxisId="right" type="monotone" dataKey="views" stroke="#22c55e" strokeWidth={3} name="Views" dot={{ r: 4 }} activeDot={{ r: 8 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <div className="bg-muted/30 rounded-lg p-4 border flex flex-col">
+            <h3 className="font-semibold text-lg mb-4">Audience Distribution (Top Countries)</h3>
+            <div className="flex-1 overflow-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="text-xs text-muted-foreground uppercase bg-muted/50">
+                  <tr>
+                    <th className="px-4 py-3 rounded-tl-lg">Country</th>
+                    <th className="px-4 py-3 rounded-tr-lg text-right">Percentage</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {output.audienceInsights?.topCountries?.map((item: any, i: number) => (
+                    <tr key={i} className="border-b border-border/50 last:border-0">
+                      <td className="px-4 py-3 font-medium">{item.country}</td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
+                            <div className="h-full bg-primary" style={{ width: `${item.percentage}%` }}></div>
+                          </div>
+                          <span className="w-8">{item.percentage}%</span>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-muted/30 rounded-lg p-4 border">
+          <h3 className="font-semibold text-lg mb-4">Similar Channels</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {output.similarChannels?.map((channel: any, i: number) => (
+              <a key={i} href={channel.url} target="_blank" rel="noopener noreferrer" className="p-4 bg-background rounded-xl border hover:border-primary transition-colors flex items-center justify-between group">
+                <span className="font-medium">{channel.name}</span>
+                <Globe className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+              </a>
+            ))}
           </div>
         </div>
       </div>
@@ -589,31 +643,88 @@ export function AdvancedToolPage() {
                 )}
 
                 {tool.id === 'advanced-script-writer' && (
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     <div className="space-y-2">
-                      <Label className="text-sm font-bold">Script Format</Label>
-                      <Select value={scriptFormat} onValueChange={(v: any) => setScriptFormat(v)}>
+                      <Label className="text-sm font-bold">Step 1: Category</Label>
+                      <Select value={scriptCategory} onValueChange={setScriptCategory}>
                         <SelectTrigger className="rounded-xl">
-                          <SelectValue placeholder="Select Format" />
+                          <SelectValue placeholder="Select Category" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Full">Full Details (Headings, Visuals, Timestamps)</SelectItem>
-                          <SelectItem value="Paragraph">Single Paragraph (Continuous Narrative)</SelectItem>
+                          {SCRIPT_CATEGORIES.map(cat => (
+                            <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                          ))}
+                          <SelectItem value="Custom">Custom Category</SelectItem>
                         </SelectContent>
                       </Select>
+                      {scriptCategory === 'Custom' && (
+                        <Input 
+                          placeholder="Enter custom category..." 
+                          value={customCategory}
+                          onChange={(e) => setCustomCategory(e.target.value)}
+                          className="mt-2 rounded-xl"
+                        />
+                      )}
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-sm font-bold">Step 2: Script Style</Label>
+                        <Button variant="ghost" size="sm" onClick={selectAllStyles} className="h-6 text-xs">
+                          {selectedTypes.length === SCRIPT_STYLES.length ? 'Deselect All' : 'Select All'}
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {SCRIPT_STYLES.map(style => (
+                          <div key={style} className="flex items-center space-x-2 bg-muted/30 p-2 rounded-lg border border-transparent hover:border-primary/20 transition-colors">
+                            <Checkbox 
+                              id={`style-${style}`} 
+                              checked={selectedTypes.includes(style)}
+                              onCheckedChange={() => toggleScriptStyle(style)}
+                            />
+                            <label htmlFor={`style-${style}`} className="text-xs font-medium leading-none cursor-pointer select-none flex-1">
+                              {style}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
                     </div>
 
                     <div className="space-y-2">
-                      <Label className="text-sm font-bold">Generation Mode</Label>
-                      <Select value={generationMode} onValueChange={(v: any) => setGenerationMode(v)}>
+                      <Label className="text-sm font-bold">Step 3: Script Length</Label>
+                      <Select value={scriptLength} onValueChange={setScriptLength}>
                         <SelectTrigger className="rounded-xl">
-                          <SelectValue placeholder="Select Mode" />
+                          <SelectValue placeholder="Select Length" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Full">Full Script (One Go)</SelectItem>
-                          <SelectItem value="Parts">Sequential Parts (Step-by-Step)</SelectItem>
+                          {SCRIPT_LENGTHS.map(len => (
+                            <SelectItem key={len.value} value={len.value}>{len.label}</SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
+                      
+                      {scriptLength === 'custom' && (
+                        <div className="flex gap-2 mt-2">
+                          <Input 
+                            type="number" 
+                            placeholder="Value" 
+                            value={customLengthValue}
+                            onChange={(e) => setCustomLengthValue(e.target.value)}
+                            className="rounded-xl"
+                            min="1"
+                          />
+                          <Select value={customLengthUnit} onValueChange={setCustomLengthUnit}>
+                            <SelectTrigger className="rounded-xl w-[120px]">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Seconds">Seconds</SelectItem>
+                              <SelectItem value="Minutes">Minutes</SelectItem>
+                              <SelectItem value="Hours">Hours</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -697,11 +808,31 @@ export function AdvancedToolPage() {
                 <CardTitle className="text-2xl font-black">ANALYSIS REPORT</CardTitle>
                 <CardDescription>AI-powered insights and recommendations</CardDescription>
               </div>
-              {output && typeof output === 'string' && (
+              {output && typeof output === 'string' && tool.id !== 'advanced-script-writer' && (
                 <div className="flex space-x-2">
                   <Button variant="outline" size="sm" onClick={() => handleCopy(output)} className="rounded-full">
                     {isCopied['main'] ? <CheckCircle2 className="h-4 w-4 text-green-500 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
                     Copy
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => handleRead(output)} className="rounded-full">
+                    <Volume2 className="h-4 w-4 mr-2" />
+                    Listen
+                  </Button>
+                </div>
+              )}
+              {output && typeof output === 'string' && tool.id === 'advanced-script-writer' && (
+                <div className="flex flex-wrap gap-2">
+                  <Button variant="outline" size="sm" onClick={() => handleCopy(output.replace(/\[\d+:\d+(?:\s*-\s*\d+:\d+)?\]/g, '').replace(/\[.*?\]/g, '').trim(), 'only-script')} className="rounded-full">
+                    {isCopied['only-script'] ? <CheckCircle2 className="h-4 w-4 text-green-500 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
+                    Copy Only Script
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => handleCopy(output.replace(/\[\d+:\d+(?:\s*-\s*\d+:\d+)?\]/g, '').trim(), 'script-headings')} className="rounded-full">
+                    {isCopied['script-headings'] ? <CheckCircle2 className="h-4 w-4 text-green-500 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
+                    Copy with Headings
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => handleCopy(output, 'full')} className="rounded-full">
+                    {isCopied['full'] ? <CheckCircle2 className="h-4 w-4 text-green-500 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
+                    Copy Full (Timestamps)
                   </Button>
                   <Button variant="outline" size="sm" onClick={() => handleRead(output)} className="rounded-full">
                     <Volume2 className="h-4 w-4 mr-2" />

@@ -12,8 +12,8 @@ export function AiScriptGeneratorSEO() {
         <meta name="keywords" content="ai script generator for youtube, free AI tools for YouTubers, AI tools for creators, best ai tools for creators 2026" />
       </Helmet>
 
-      <Button variant="ghost" asChild className="mb-8 -ml-4 text-muted-foreground hover:text-primary">
-        <Link to="/">
+      <Button variant="ghost" className="mb-8 -ml-4 text-muted-foreground hover:text-primary">
+        <Link to="/" className="flex items-center">
           <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
         </Link>
       </Button>
@@ -33,7 +33,7 @@ export function AiScriptGeneratorSEO() {
             Our <strong>free AI tools for YouTubers</strong> are engineered to include hooks, transitions, and calls to action 
             that maximize watch time and subscriber growth.
           </p>
-          <Button asChild size="lg" className="mt-6 rounded-full font-bold">
+          <Button size="lg" className="mt-6 rounded-full font-bold">
             <Link to="/tool/shorts-script-generator">Start Writing Your Script</Link>
           </Button>
         </div>
@@ -72,7 +72,7 @@ export function AiScriptGeneratorSEO() {
         <div className="my-16 p-8 bg-muted rounded-2xl text-center">
           <h3 className="text-2xl font-bold mb-4">Ready to write your next viral hit?</h3>
           <p className="mb-8">Use our <strong>ai tools website free</strong> to create scripts that convert viewers into fans.</p>
-          <Button asChild size="lg" className="rounded-full px-12 h-14 text-lg font-bold">
+          <Button size="lg" className="rounded-full px-12 h-14 text-lg font-bold">
             <Link to="/tool/shorts-script-generator">Generate Your Script Now</Link>
           </Button>
         </div>

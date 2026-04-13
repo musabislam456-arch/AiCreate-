@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
-import { PenTool, ImagePlus, FileText, BarChart3 } from 'lucide-react';
+import { PenTool, ImagePlus, FileText } from 'lucide-react';
 
 export function Home() {
   const { comments, addComment, user } = useAppStore();
@@ -50,8 +50,8 @@ export function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       <Helmet>
-        <title>CreatorAI – Best Free AI Tools for YouTubers & Content Creators 2026</title>
-        <meta name="description" content="Boost your channel with CreatorAI, the ultimate platform for free AI tools for YouTubers. Generate viral titles, scripts, and thumbnails instantly." />
+        <title>CreatorAI – All-in-One AI Tools for YouTubers</title>
+        <meta name="description" content="Use advanced AI tools for YouTubers including script writer, channel analyzer and thumbnail generator." />
       </Helmet>
 
       {/* Hero Section */}

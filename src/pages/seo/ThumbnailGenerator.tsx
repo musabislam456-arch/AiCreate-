@@ -12,8 +12,8 @@ export function ThumbnailGeneratorSEO() {
         <meta name="keywords" content="free ai thumbnail generator, free AI tools for YouTubers, AI tools for creators, best ai tools for creators 2026" />
       </Helmet>
 
-      <Button variant="ghost" asChild className="mb-8 -ml-4 text-muted-foreground hover:text-primary">
-        <Link to="/">
+      <Button variant="ghost" className="mb-8 -ml-4 text-muted-foreground hover:text-primary">
+        <Link to="/" className="flex items-center">
           <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
         </Link>
       </Button>
@@ -33,7 +33,7 @@ export function ThumbnailGeneratorSEO() {
             bridge that gap by generating high-quality, visually stunning images that are optimized for high 
             click-through rates (CTR).
           </p>
-          <Button asChild size="lg" className="mt-6 rounded-full font-bold">
+          <Button size="lg" className="mt-6 rounded-full font-bold">
             <Link to="/tool/thumbnail-generator">Generate Your Thumbnail</Link>
           </Button>
         </div>
@@ -72,7 +72,7 @@ export function ThumbnailGeneratorSEO() {
         <div className="my-16 p-8 bg-muted rounded-2xl text-center">
           <h3 className="text-2xl font-bold mb-4">Stop losing views to bad design.</h3>
           <p className="mb-8">Start using our <strong>free AI tools for YouTubers</strong> to dominate the search results.</p>
-          <Button asChild size="lg" className="rounded-full px-12 h-14 text-lg font-bold">
+          <Button size="lg" className="rounded-full px-12 h-14 text-lg font-bold">
             <Link to="/tool/thumbnail-generator">Create Your Thumbnail Now</Link>
           </Button>
         </div>
