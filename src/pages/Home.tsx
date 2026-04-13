@@ -13,6 +13,8 @@ import { Label } from '../components/ui/label';
 import { toast } from 'sonner';
 import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
+import { PenTool, ImagePlus, FileText, BarChart3 } from 'lucide-react';
 
 export function Home() {
   const { comments, addComment, user } = useAppStore();
@@ -47,6 +49,11 @@ export function Home() {
 
   return (
     <div className="flex flex-col min-h-screen">
+      <Helmet>
+        <title>CreatorAI – Best Free AI Tools for YouTubers & Content Creators 2026</title>
+        <meta name="description" content="Boost your channel with CreatorAI, the ultimate platform for free AI tools for YouTubers. Generate viral titles, scripts, and thumbnails instantly." />
+      </Helmet>
+
       {/* Hero Section */}
       <section className="relative py-24 md:py-40 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(255,0,0,0.1),rgba(255,255,255,0))] pointer-events-none" />
@@ -58,7 +65,7 @@ export function Home() {
             SUPERCHARGE YOUR CONTENT WITH <span className="text-primary">CreatorAI</span>
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-2xl mx-auto text-balance">
-            The ultimate AI-powered platform for modern content creators. Write, analyze, and grow faster than ever.
+            The ultimate platform for <span className="text-foreground font-semibold">free AI tools for YouTubers</span>. Write, analyze, and grow faster than ever with the <span className="text-foreground font-semibold">best AI tools for creators 2026</span>.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-6">
             <Button 
@@ -76,6 +83,26 @@ export function Home() {
             >
               Advanced Features
             </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* SEO Landing Pages Links */}
+      <section className="py-12 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Link to="/youtube-title-generator" className="flex items-center p-4 bg-background rounded-xl border hover:border-primary transition-colors">
+              <Search className="w-5 h-5 mr-3 text-primary" />
+              <span className="font-semibold">YouTube Title Generator AI Free</span>
+            </Link>
+            <Link to="/ai-script-generator" className="flex items-center p-4 bg-background rounded-xl border hover:border-primary transition-colors">
+              <FileText className="w-5 h-5 mr-3 text-primary" />
+              <span className="font-semibold">AI Script Generator for YouTube</span>
+            </Link>
+            <Link to="/thumbnail-generator" className="flex items-center p-4 bg-background rounded-xl border hover:border-primary transition-colors">
+              <ImagePlus className="w-5 h-5 mr-3 text-primary" />
+              <span className="font-semibold">Free AI Thumbnail Generator</span>
+            </Link>
           </div>
         </div>
       </section>
@@ -150,7 +177,68 @@ export function Home() {
         </div>
       </section>
 
-      {/* Reviews Section */}
+      {/* SEO Content Section */}
+      <section className="py-24 container mx-auto px-4 border-t">
+        <div className="max-w-4xl mx-auto prose prose-lg dark:prose-invert">
+          <h2 className="text-3xl font-black mb-8">The Best Free AI Tools for YouTubers and Content Creators</h2>
+          
+          <p>
+            In the rapidly evolving digital landscape, staying ahead of the curve is essential for any content creator. 
+            <strong>CreatorAI</strong> is designed to be your ultimate partner, providing a comprehensive suite of 
+            <strong>free AI tools for YouTubers</strong> that streamline your workflow and boost your channel's visibility. 
+            Whether you're a seasoned pro or just starting out, our <strong>ai tools website free</strong> offers everything 
+            you need to succeed in 2026.
+          </p>
+
+          <h3 className="text-2xl font-bold mt-12 mb-4">Why Use AI Tools for Content Creation?</h3>
+          <p>
+            Using <strong>AI tools for creators</strong> isn't just about saving time; it's about optimizing for the algorithm. 
+            Our platform leverages advanced machine learning to help you understand what works. From 
+            <strong>youtube title generator ai free</strong> options that increase click-through rates to 
+            <strong>ai script generator for youtube</strong> tools that keep viewers engaged, we provide the 
+            <strong>best ai tools for creators 2026</strong>.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-12">
+            <div>
+              <h4 className="text-xl font-bold mb-4 flex items-center">
+                <Search className="w-5 h-5 mr-2 text-primary" /> YouTube Title Generator
+              </h4>
+              <p className="text-base text-muted-foreground">
+                Stop guessing what titles will work. Our SEO-optimized title generator analyzes trending keywords 
+                to give you high-CTR titles that rank on Google and YouTube search.
+              </p>
+            </div>
+            <div>
+              <h4 className="text-xl font-bold mb-4 flex items-center">
+                <FileText className="w-5 h-5 mr-2 text-primary" /> AI Script Generator
+              </h4>
+              <p className="text-base text-muted-foreground">
+                Generate full video scripts in seconds. Our AI understands pacing, hooks, and calls to action, 
+                ensuring your content is perfectly structured for maximum retention.
+              </p>
+            </div>
+            <div>
+              <h4 className="text-xl font-bold mb-4 flex items-center">
+                <ImagePlus className="w-5 h-5 mr-2 text-primary" /> Free AI Thumbnail Generator
+              </h4>
+              <p className="text-base text-muted-foreground">
+                Visuals are everything. Create stunning, high-quality thumbnails that stand out in the feed 
+                using our state-of-the-art AI image generation tools.
+              </p>
+            </div>
+            <div>
+              <h4 className="text-xl font-bold mb-4 flex items-center">
+                <BarChart3 className="w-5 h-5 mr-2 text-primary" /> Channel Analysis
+              </h4>
+              <p className="text-base text-muted-foreground">
+                Get deep insights into your channel's performance. Our AI analysis tools provide actionable 
+                suggestions to improve your content strategy and reach more viewers.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
       <section className="py-24 container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between mb-16 gap-8">
           <div className="text-center md:text-left">

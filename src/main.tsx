@@ -9,23 +9,32 @@ import { HistoryPage } from './pages/HistoryPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { ScrollToTop } from './components/ScrollToTop';
 import { StoreInitializer } from './components/StoreInitializer';
+import { HelmetProvider } from 'react-helmet-async';
+import { YoutubeTitleGeneratorSEO } from './pages/seo/YoutubeTitleGenerator';
+import { AiScriptGeneratorSEO } from './pages/seo/AiScriptGenerator';
+import { ThumbnailGeneratorSEO } from './pages/seo/ThumbnailGenerator';
 import './index.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <StoreInitializer>
-      <BrowserRouter>
-        <ScrollToTop />
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="tool/:id" element={<ToolPage />} />
-            <Route path="advanced/:id" element={<AdvancedToolPage />} />
-            <Route path="history" element={<HistoryPage />} />
-            <Route path="profile" element={<ProfilePage />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </StoreInitializer>
+    <HelmetProvider>
+      <StoreInitializer>
+        <BrowserRouter>
+          <ScrollToTop />
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Home />} />
+              <Route path="tool/:id" element={<ToolPage />} />
+              <Route path="advanced/:id" element={<AdvancedToolPage />} />
+              <Route path="history" element={<HistoryPage />} />
+              <Route path="profile" element={<ProfilePage />} />
+              <Route path="youtube-title-generator" element={<YoutubeTitleGeneratorSEO />} />
+              <Route path="ai-script-generator" element={<AiScriptGeneratorSEO />} />
+              <Route path="thumbnail-generator" element={<ThumbnailGeneratorSEO />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </StoreInitializer>
+    </HelmetProvider>
   </StrictMode>,
 );

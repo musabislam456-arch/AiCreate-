@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { useParams, Navigate, useNavigate } from 'react-router-dom';
-import { ADVANCED_TOOLS } from '../lib/tools-data';
+import { useParams, Navigate, useNavigate, Link } from 'react-router-dom';
+import { ADVANCED_TOOLS, CORE_TOOLS } from '../lib/tools-data';
 import { analyzeThumbnails, analyzeChannel, generateMetadata, generateContent, generateVisualPrompts, generateAdvancedScript, generateScriptPart, textToSpeech, AIModel } from '../lib/gemini';
 import { useAppStore } from '../lib/store';
+import { Helmet } from 'react-helmet-async';
 import { Button } from '../components/ui/button';
 import { Textarea } from '../components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
@@ -482,6 +483,10 @@ export function AdvancedToolPage() {
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-6xl">
+      <Helmet>
+        <title>{tool.title} – Advanced AI Tools for Creators | CreatorAI</title>
+        <meta name="description" content={tool.description} />
+      </Helmet>
       <Button variant="ghost" onClick={() => navigate(-1)} className="mb-8 -ml-4 text-muted-foreground hover:text-primary">
         <ArrowLeft className="w-4 h-4 mr-2" />
         Back to Dashboard
@@ -746,6 +751,19 @@ export function AdvancedToolPage() {
               )}
             </CardContent>
           </Card>
+        </div>
+      </div>
+
+      {/* Internal Linking: Related Advanced Tools */}
+      <div className="mt-24 pt-12 border-t">
+        <h3 className="text-2xl font-bold mb-8">More Advanced AI Features</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          {ADVANCED_TOOLS.filter(t => t.id !== tool.id).map(relatedTool => (
+            <Link key={relatedTool.id} to={`/advanced/${relatedTool.id}`} className="p-4 bg-muted rounded-xl hover:bg-primary/5 hover:border-primary border transition-all">
+              <h4 className="font-bold text-sm mb-1">{relatedTool.title}</h4>
+              <p className="text-xs text-muted-foreground line-clamp-1">{relatedTool.description}</p>
+            </Link>
+          ))}
         </div>
       </div>
     </div>

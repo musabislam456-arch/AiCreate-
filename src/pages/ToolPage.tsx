@@ -18,6 +18,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Label } from '../components/ui/label';
 import { MicButton } from '../components/MicButton';
 import { ModelSelector } from '../components/ModelSelector';
+import { Helmet } from 'react-helmet-async';
+import { Link } from 'react-router-dom';
 
 const LANGUAGES = [
   "English", "Spanish", "French", "German", "Hindi", 
@@ -212,6 +214,10 @@ export function ToolPage() {
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-6xl">
+      <Helmet>
+        <title>{tool.title} – Free AI Tools for YouTubers | CreatorAI</title>
+        <meta name="description" content={tool.description} />
+      </Helmet>
       <Button variant="ghost" onClick={() => navigate(-1)} className="mb-8 -ml-4 text-muted-foreground hover:text-primary">
         <ArrowLeft className="w-4 h-4 mr-2" />
         Back to Dashboard
@@ -515,6 +521,19 @@ export function ToolPage() {
                 <p className="text-sm text-foreground/80 leading-relaxed italic">"{comment.text}"</p>
               </CardContent>
             </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* Internal Linking: Related Tools */}
+      <div className="mt-24 pt-12 border-t">
+        <h3 className="text-2xl font-bold mb-8">Related AI Tools for Creators</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          {CORE_TOOLS.filter(t => t.id !== tool.id).slice(0, 4).map(relatedTool => (
+            <Link key={relatedTool.id} to={`/tool/${relatedTool.id}`} className="p-4 bg-muted rounded-xl hover:bg-primary/5 hover:border-primary border transition-all">
+              <h4 className="font-bold text-sm mb-1">{relatedTool.title}</h4>
+              <p className="text-xs text-muted-foreground line-clamp-1">{relatedTool.description}</p>
+            </Link>
           ))}
         </div>
       </div>
