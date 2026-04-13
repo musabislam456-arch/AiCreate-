@@ -84,12 +84,12 @@ async function callExternalAI(prompt: string, model: string = 'openai/gpt-5.2-ch
   }
 }
 
-export async function generateAIResponse(prompt: string, selectedModel: AIModel = 'ChatGPT', useSearch: boolean = false): Promise<string> {
-  // Ensure long and detailed responses unless ChatGPT is used (which should be short and fast as per user request)
-  const isChatGPT = selectedModel === 'ChatGPT';
-  const enhancedPrompt = isChatGPT 
-    ? prompt + "\n\nIMPORTANT: Provide a quick, short, and fast response. Be concise but helpful."
-    : prompt + "\n\nIMPORTANT: Provide a very long, detailed, and comprehensive response. Do not be brief.";
+export async function generateAIResponse(prompt: string, selectedModel: AIModel = 'ChatGPT', useSearch: boolean = false, answerMode: 'short' | 'detailed' = 'short'): Promise<string> {
+  const modeInstruction = answerMode === 'short' 
+    ? "IMPORTANT: Provide a quick, short, and concise answer. Do not be overly detailed."
+    : "IMPORTANT: Provide a very long, detailed, and comprehensive answer. Explain thoroughly.";
+
+  const enhancedPrompt = prompt + "\n\n" + modeInstruction;
 
   const modelsToTry: AIModel[] = [];
   
@@ -158,32 +158,38 @@ function formatGeminiError(error: any, fallbackMessage: string): Error {
   return new Error(`${fallbackMessage}: ${msg || 'Unknown error'}`);
 }
 
-export async function generateContent(prompt: string, model: AIModel = 'ChatGPT') {
+export async function generateContent(prompt: string, model: AIModel = 'ChatGPT', answerMode: 'short' | 'detailed' = 'short') {
   try {
-    return await generateAIResponse(prompt, model);
+    return await generateAIResponse(prompt, model, false, answerMode);
   } catch (error: any) {
     console.error('Error generating content:', error);
     throw error;
   }
 }
 
-export async function generateContentWithSearch(prompt: string, model: AIModel = 'ChatGPT') {
+export async function generateContentWithSearch(prompt: string, model: AIModel = 'ChatGPT', answerMode: 'short' | 'detailed' = 'short') {
   // If model is not Gemini/Auto, we use Puter's web search
   if (model !== 'Gemini' && model !== 'Auto') {
-    return await generateAIResponse(prompt, model, true);
+    return await generateAIResponse(prompt, model, true, answerMode);
   }
+
+  const modeInstruction = answerMode === 'short' 
+    ? "IMPORTANT: Provide a quick, short, and concise answer. Do not be overly detailed."
+    : "IMPORTANT: Provide a very long, detailed, and comprehensive answer. Explain thoroughly.";
+
+  const enhancedPrompt = prompt + "\n\n" + modeInstruction;
 
   try {
     if (!apiKey) throw new Error('API key is missing.');
     const response = await ai.models.generateContent({
       model: 'models/gemini-2.0-flash',
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      contents: [{ role: 'user', parts: [{ text: enhancedPrompt }] }],
       // @ts-ignore - tools might not be in the type definition but supported by API
       tools: [{ googleSearch: {} }],
     });
     return response.text || '';
   } catch (error: any) {
-    return await generateAIResponse(prompt, model, true);
+    return await generateAIResponse(prompt, model, true, answerMode);
   }
 }
 
@@ -409,13 +415,18 @@ export async function generateScriptPart(
   }
 }
 
-export async function textToSpeech(text: string) {
+export async function textToSpeech(text: string, voice: string = 'alloy', responseFormat: string = 'mp3') {
   if (!window.puter) {
     throw new Error('Puter.js not loaded.');
   }
   try {
-    // Puter.js txt2speech returns an HTMLAudioElement
-    const audio = await window.puter.ai.txt2speech(text);
+    const audio = await window.puter.ai.txt2speech(text, {
+      provider: 'openai',
+      model: 'gpt-4o-mini-tts',
+      voice,
+      response_format: responseFormat,
+      instructions: 'Keep the delivery clear and friendly.',
+    });
     if (audio && typeof audio.play === 'function') {
       audio.play();
       return audio;

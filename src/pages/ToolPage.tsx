@@ -94,6 +94,7 @@ export function ToolPage() {
   const [extraInput2, setExtraInput2] = useState('');
   const [language, setLanguage] = useState(() => localStorage.getItem('creatorai_language') || 'English');
   const [selectedAIModel, setSelectedAIModel] = useState<AIModel>(() => (localStorage.getItem('creatorai_model') as AIModel) || 'Auto');
+  const [answerMode, setAnswerMode] = useState<'short' | 'detailed'>(() => (localStorage.getItem('creatorai_answer_mode') as 'short' | 'detailed') || 'short');
   const [output, setOutput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
@@ -115,6 +116,10 @@ export function ToolPage() {
   useEffect(() => {
     localStorage.setItem('creatorai_model', selectedAIModel);
   }, [selectedAIModel]);
+
+  useEffect(() => {
+    localStorage.setItem('creatorai_answer_mode', answerMode);
+  }, [answerMode]);
 
   // Content Scheduler specific states
   const [scheduleCategory, setScheduleCategory] = useState('Gaming');
@@ -174,9 +179,9 @@ export function ToolPage() {
       
       let result;
       if (tool.id === 'content-scheduler') {
-        result = await generateContentWithSearch(prompt, selectedAIModel);
+        result = await generateContentWithSearch(prompt, selectedAIModel, answerMode);
       } else {
-        result = await generateContent(prompt, selectedAIModel);
+        result = await generateContent(prompt, selectedAIModel, answerMode);
       }
       
       if (tool.id === 'thumbnail-generator') {
@@ -340,6 +345,19 @@ export function ToolPage() {
                 <div className="space-y-2">
                   <Label className="text-sm font-bold">AI Engine</Label>
                   <ModelSelector value={selectedAIModel} onChange={setSelectedAIModel} />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-bold">Answer Mode</Label>
+                  <Select value={answerMode} onValueChange={(v: 'short' | 'detailed') => setAnswerMode(v)}>
+                    <SelectTrigger className="rounded-xl">
+                      <SelectValue placeholder="Select Mode" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="short">Quick Short Answer</SelectItem>
+                      <SelectItem value="detailed">Detailed Answer</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 

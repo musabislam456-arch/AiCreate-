@@ -56,6 +56,7 @@ export function AdvancedToolPage() {
   const [input, setInput] = useState('');
   const [language, setLanguage] = useState(() => localStorage.getItem('creatorai_language') || 'English');
   const [selectedAIModel, setSelectedAIModel] = useState<AIModel>(() => (localStorage.getItem('creatorai_model') as AIModel) || 'ChatGPT');
+  const [answerMode, setAnswerMode] = useState<'short' | 'detailed'>(() => (localStorage.getItem('creatorai_answer_mode') as 'short' | 'detailed') || 'short');
   const [output, setOutput] = useState<any>('');
   const [isLoading, setIsLoading] = useState(false);
   const [isCopied, setIsCopied] = useState<Record<string, boolean>>({});
@@ -96,6 +97,10 @@ export function AdvancedToolPage() {
   useEffect(() => {
     localStorage.setItem('creatorai_model', selectedAIModel);
   }, [selectedAIModel]);
+
+  useEffect(() => {
+    localStorage.setItem('creatorai_answer_mode', answerMode);
+  }, [answerMode]);
 
   useEffect(() => {
     localStorage.setItem('creatorai_prompt_lang', promptLanguage);
@@ -221,7 +226,7 @@ export function AdvancedToolPage() {
       } else if (tool.id === 'metadata-generator') {
         result = await generateMetadata(input, language, selectedAIModel);
       } else if (tool.id === 'competitor-analysis') {
-        result = await generateContent(`Analyze the competitor strategy based on the following context: "${input}". Provide actionable insights on content gaps, thumbnail strategies, and pacing. Language: ${language}`, selectedAIModel);
+        result = await generateContent(`Analyze the competitor strategy based on the following context: "${input}". Provide actionable insights on content gaps, thumbnail strategies, and pacing. Language: ${language}`, selectedAIModel, answerMode);
       } else if (tool.id === 'script-to-visuals') {
         const duration = visualDuration === 'custom' ? customDuration : visualDuration;
         result = await generateVisualPrompts(input, duration, promptLanguage, voiceoverLanguage, selectedAIModel);
@@ -589,6 +594,20 @@ export function AdvancedToolPage() {
                   <Label className="text-sm font-bold">AI Engine</Label>
                   <ModelSelector value={selectedAIModel} onChange={setSelectedAIModel} />
                 </div>
+                {tool.id === 'competitor-analysis' && (
+                  <div className="space-y-2">
+                    <Label className="text-sm font-bold">Answer Mode</Label>
+                    <Select value={answerMode} onValueChange={(v: 'short' | 'detailed') => setAnswerMode(v)}>
+                      <SelectTrigger className="rounded-xl">
+                        <SelectValue placeholder="Select Mode" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="short">Quick Short Answer</SelectItem>
+                        <SelectItem value="detailed">Detailed Answer</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
               </div>
 
 
