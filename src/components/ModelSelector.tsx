@@ -23,13 +23,13 @@ export function ModelSelector({ value, onChange, className }: ModelSelectorProps
           <SelectItem value="Nemotron">
             <div className="flex items-center gap-2">
               <Brain className="w-4 h-4 text-green-500" />
-              <span>Nemotron (OpenRouter - Free)</span>
+              <span>Nemotron 120B</span>
             </div>
           </SelectItem>
           <SelectItem value="Auto">
             <div className="flex items-center gap-2">
               <Zap className="w-4 h-4 text-yellow-500" />
-              <span>Auto Mode (Smart Fallback)</span>
+              <span>Auto Mode</span>
             </div>
           </SelectItem>
           <SelectItem value="Gemini">
@@ -41,55 +41,55 @@ export function ModelSelector({ value, onChange, className }: ModelSelectorProps
           <SelectItem value="GLM-4.5">
             <div className="flex items-center gap-2">
               <Zap className="w-4 h-4 text-orange-500" />
-              <span>GLM-4.5 (OpenRouter - Free)</span>
+              <span>GLM-4.5</span>
             </div>
           </SelectItem>
           <SelectItem value="GPT-OSS-Free">
             <div className="flex items-center gap-2">
               <Cpu className="w-4 h-4 text-cyan-500" />
-              <span>GPT-OSS 120B (Free)</span>
+              <span>GPT-OSS 120B (1)</span>
             </div>
           </SelectItem>
           <SelectItem value="GPT-OSS-Groq">
             <div className="flex items-center gap-2">
               <Cpu className="w-4 h-4 text-indigo-500" />
-              <span>GPT-OSS 120B (Groq)</span>
+              <span>GPT-OSS 120B (2)</span>
             </div>
           </SelectItem>
           <SelectItem value="Llama-3.3">
             <div className="flex items-center gap-2">
               <Zap className="w-4 h-4 text-purple-500" />
-              <span>Llama 3.3 70B (Groq)</span>
+              <span>Llama 3.3 70B</span>
             </div>
           </SelectItem>
           <SelectItem value="GPT-5">
             <div className="flex items-center gap-2">
               <Brain className="w-4 h-4 text-red-500" />
-              <span>OpenAI GPT-5 (GitHub)</span>
+              <span>GPT-5</span>
             </div>
           </SelectItem>
           <SelectItem value="Grok-3">
             <div className="flex items-center gap-2">
               <Cpu className="w-4 h-4 text-pink-500" />
-              <span>xAI Grok 3 (GitHub)</span>
+              <span>Grok 3</span>
             </div>
           </SelectItem>
           <SelectItem value="DeepSeek-V3">
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-teal-500" />
-              <span>DeepSeek V3 (GitHub)</span>
+              <span>DeepSeek V3</span>
             </div>
           </SelectItem>
           <SelectItem value="Qwen-3">
             <div className="flex items-center gap-2">
               <Cpu className="w-4 h-4 text-lime-500" />
-              <span>Qwen 3 (Groq)</span>
+              <span>Qwen 3 32B</span>
             </div>
           </SelectItem>
           <SelectItem value="Llama-3.1">
             <div className="flex items-center gap-2">
               <Zap className="w-4 h-4 text-amber-500" />
-              <span>Llama 3.1 8B (Groq)</span>
+              <span>Llama 3.1 8B</span>
             </div>
           </SelectItem>
         </SelectContent>

@@ -4,6 +4,8 @@ import {
   signInWithPopup, 
   GoogleAuthProvider, 
   signOut,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword
 } from 'firebase/auth';
 import { 
   collection, 
@@ -91,6 +93,8 @@ interface AppState {
   history: HistoryItem[];
   isAuthReady: boolean;
   login: () => Promise<void>;
+  loginWithEmail: (email: string, pass: string) => Promise<void>;
+  signUpWithEmail: (email: string, pass: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (name: string, avatarUrl: string) => Promise<void>;
   addComment: (text: string, rating: number) => Promise<void>;
@@ -178,6 +182,31 @@ export const useAppStore = create<AppState>()((set, get) => ({
       await signInWithPopup(auth, provider);
     } catch (error) {
       console.error('Login failed:', error);
+      throw error;
+    }
+  },
+
+  loginWithEmail: async (email, pass) => {
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+    } catch (error) {
+      console.error('Email login failed:', error);
+      throw error;
+    }
+  },
+
+  signUpWithEmail: async (email, pass, name) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+      const userDocRef = doc(db, 'users', userCredential.user.uid);
+      await setDoc(userDocRef, {
+        name: name || 'Creator',
+        email: email,
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${userCredential.user.uid}`,
+        role: 'user'
+      });
+    } catch (error) {
+      console.error('Email signup failed:', error);
       throw error;
     }
   },

@@ -354,7 +354,7 @@ export async function generateMetadata(topic: string, language: string = 'Englis
   }
 }
 
-export async function chatWithAssistant(message: string, history: {role: string, text: string}[], language: string = 'English', model: AIModel = 'Nemotron') {
+export async function chatWithAssistant(message: string, history: {role: string, text: string}[], language: string = 'English', model: AIModel = 'Nemotron', answerMode: 'short' | 'detailed' = 'short') {
   try {
     let fullMessage = `System Instruction: You are an expert YouTube and social media growth assistant. Provide highly actionable, strategic, and encouraging responses. Always respond in ${language}.\n\n`;
     
@@ -365,7 +365,7 @@ export async function chatWithAssistant(message: string, history: {role: string,
     
     fullMessage += `User: ${message}`;
 
-    return await generateAIResponse(fullMessage, model);
+    return await generateAIResponse(fullMessage, model, false, answerMode);
   } catch (error: any) {
     console.error('Error chatting with assistant:', error);
     throw error;

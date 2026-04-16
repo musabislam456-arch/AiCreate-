@@ -31,7 +31,12 @@ export function FloatingChat() {
   const [isLoading, setIsLoading] = useState(false);
   const [language, setLanguage] = useState('English');
   const [selectedAIModel, setSelectedAIModel] = useState<AIModel>('Auto');
+  const [answerMode, setAnswerMode] = useState<'short' | 'detailed'>(() => (localStorage.getItem('creatorai_answer_mode') as 'short' | 'detailed') || 'short');
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    localStorage.setItem('creatorai_answer_mode', answerMode);
+  }, [answerMode]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -48,7 +53,7 @@ export function FloatingChat() {
     setIsLoading(true);
 
     try {
-      const response = await chatWithAssistant(userMessage, messages, language, selectedAIModel);
+      const response = await chatWithAssistant(userMessage, messages, language, selectedAIModel, answerMode);
       setMessages(prev => [...prev, { role: 'assistant', text: response }]);
     } catch (error: any) {
       setMessages(prev => [...prev, { role: 'assistant', text: `Sorry, I encountered an error: ${error?.message || 'Please try again.'}` }]);
@@ -104,18 +109,32 @@ export function FloatingChat() {
                 ))}
               </SelectContent>
             </Select>
+            <Select value={answerMode} onValueChange={(v) => setAnswerMode(v as 'short' | 'detailed')}>
+              <SelectTrigger className="h-7 w-[80px] text-[10px] px-2">
+                <SelectValue placeholder="Length" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="short">Short</SelectItem>
+                <SelectItem value="detailed">Detailed</SelectItem>
+              </SelectContent>
+            </Select>
             <Select value={selectedAIModel} onValueChange={(v) => setSelectedAIModel(v as AIModel)}>
               <SelectTrigger className="h-7 w-[80px] text-[10px] px-2">
                 <SelectValue placeholder="Model" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Auto">Auto</SelectItem>
-                <SelectItem value="ChatGPT">GPT-4</SelectItem>
-                <SelectItem value="Gemini">Gemini</SelectItem>
-                <SelectItem value="Claude">Claude</SelectItem>
-                <SelectItem value="DeepSeek">DeepSeek</SelectItem>
-                <SelectItem value="DeepSeek-Reasoner">Reasoner</SelectItem>
-                <SelectItem value="Grok">Grok</SelectItem>
+                <SelectItem value="Nemotron">Nemotron 120B</SelectItem>
+                <SelectItem value="Gemini">Gemini 2.0 Flash</SelectItem>
+                <SelectItem value="GLM-4.5">GLM-4.5</SelectItem>
+                <SelectItem value="GPT-OSS-Free">GPT-OSS 120B (1)</SelectItem>
+                <SelectItem value="GPT-OSS-Groq">GPT-OSS 120B (2)</SelectItem>
+                <SelectItem value="Llama-3.3">Llama 3.3 70B</SelectItem>
+                <SelectItem value="GPT-5">GPT-5</SelectItem>
+                <SelectItem value="Grok-3">Grok 3</SelectItem>
+                <SelectItem value="DeepSeek-V3">DeepSeek V3</SelectItem>
+                <SelectItem value="Qwen-3">Qwen 3 32B</SelectItem>
+                <SelectItem value="Llama-3.1">Llama 3.1 8B</SelectItem>
               </SelectContent>
             </Select>
             
