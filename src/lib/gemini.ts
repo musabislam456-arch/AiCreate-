@@ -123,10 +123,8 @@ export async function generateAIResponse(prompt: string, selectedModel: AIModel 
     if (modelsToTry.length === 0) modelsToTry.push('Gemini');
   } else {
     modelsToTry.push(selectedModel);
-    // Add Gemini as a fallback if it's available and not the primary choice
-    if (selectedModel !== 'Gemini' && isModelAvailable('Gemini')) {
-      modelsToTry.push('Gemini');
-    }
+    // Removed Gemini fallback here so that if a user explicitly selects a model,
+    // they see the exact error for that model (e.g., missing API key) instead of a Gemini quota error.
   }
 
   let lastError = null;
