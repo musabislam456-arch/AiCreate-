@@ -6,7 +6,7 @@ const openrouterKey = process.env.OPENROUTER_API_KEY || (import.meta as any).env
 const groqKey = process.env.GROQ_API_KEY || (import.meta as any).env?.VITE_GROQ_API_KEY;
 const githubToken = process.env.GITHUB_TOKEN || (import.meta as any).env?.VITE_GITHUB_TOKEN;
 
-export const ai = new GoogleGenAI({ apiKey: apiKey || 'dummy-key' });
+export const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
 export type AIModel = 
   | 'Gemini' 
@@ -22,7 +22,8 @@ export type AIModel =
   | 'DeepSeek-V3' 
   | 'Auto';
 
-const PROVIDER_CONFIG: Record<string, { provider: 'openrouter' | 'groq' | 'github', model: string, reasoning?: boolean }> = {
+const PROVIDER_CONFIG: Record<string, { provider: 'openrouter' | 'groq' | 'github' | 'gemini', model: string, reasoning?: boolean }> = {
+  'Gemini': { provider: 'gemini', model: 'models/gemini-2.0-flash' },
   'Nemotron': { provider: 'openrouter', model: 'nvidia/nemotron-3-super-120b-a12b:free', reasoning: true },
   'GLM-4.5': { provider: 'openrouter', model: 'z-ai/glm-4.5-air:free' },
   'GPT-OSS-Free': { provider: 'openrouter', model: 'openai/gpt-oss-120b:free', reasoning: true },
@@ -34,6 +35,20 @@ const PROVIDER_CONFIG: Record<string, { provider: 'openrouter' | 'groq' | 'githu
   'Grok-3': { provider: 'github', model: 'xai/grok-3' },
   'DeepSeek-V3': { provider: 'github', model: 'deepseek/DeepSeek-V3-0324' },
 };
+
+function isModelAvailable(model: AIModel): boolean {
+  if (model === 'Auto') return true;
+  const config = PROVIDER_CONFIG[model];
+  if (!config) return false;
+  
+  switch (config.provider) {
+    case 'gemini': return !!apiKey;
+    case 'openrouter': return !!openrouterKey;
+    case 'groq': return !!groqKey;
+    case 'github': return !!githubToken;
+    default: return false;
+  }
+}
 
 async function callExternalAI(prompt: string, config: { provider: string, model: string, reasoning?: boolean }): Promise<string> {
   let url = '';
@@ -99,12 +114,19 @@ export async function generateAIResponse(prompt: string, selectedModel: AIModel 
   const modelsToTry: AIModel[] = [];
   
   if (selectedModel === 'Auto') {
-    modelsToTry.push('Nemotron', 'Gemini', 'Llama-3.3', 'GPT-5');
+    // Priority list for Auto mode
+    const candidates: AIModel[] = ['Gemini', 'Nemotron', 'Llama-3.3', 'GPT-5'];
+    for (const m of candidates) {
+      if (isModelAvailable(m)) modelsToTry.push(m);
+    }
+    // If no keys are set, we push Gemini anyway to show the "missing key" error at the end
+    if (modelsToTry.length === 0) modelsToTry.push('Gemini');
   } else {
     modelsToTry.push(selectedModel);
-    // Add fallbacks if the primary choice fails
-    if (selectedModel !== 'Nemotron') modelsToTry.push('Nemotron');
-    if (selectedModel !== 'Gemini') modelsToTry.push('Gemini');
+    // Add Gemini as a fallback if it's available and not the primary choice
+    if (selectedModel !== 'Gemini' && isModelAvailable('Gemini')) {
+      modelsToTry.push('Gemini');
+    }
   }
 
   let lastError = null;
@@ -112,7 +134,7 @@ export async function generateAIResponse(prompt: string, selectedModel: AIModel 
   for (const model of modelsToTry) {
     try {
       if (model === 'Gemini') {
-        if (!apiKey) throw new Error('Gemini API key is missing.');
+        if (!apiKey || !ai) throw new Error('Gemini API key is missing. Please add GEMINI_API_KEY to your environment.');
         
         const response = await ai.models.generateContent({
           model: 'models/gemini-2.0-flash',
@@ -122,18 +144,28 @@ export async function generateAIResponse(prompt: string, selectedModel: AIModel 
       } else {
         const config = PROVIDER_CONFIG[model];
         if (!config) throw new Error(`Unknown model: ${model}`);
+        
+        // Check key before calling to provide a better error if this was the ONLY model requested
+        if (!isModelAvailable(model)) {
+          const providerName = config.provider.charAt(0).toUpperCase() + config.provider.slice(1);
+          throw new Error(`${providerName} API key is missing for model ${model}.`);
+        }
+
         return await callExternalAI(enhancedPrompt, config);
       }
     } catch (error: any) {
-      console.error(`Model ${model} failed:`, error);
+      // Only log as error if it's not the last model or if it's a real failure (not just missing key in Auto mode)
+      if (modelsToTry.length > 1 && model !== modelsToTry[modelsToTry.length - 1]) {
+        console.warn(`Model ${model} failed, trying fallback...`, error.message || error);
+      } else {
+        console.error(`Model ${model} failed:`, error);
+      }
       lastError = error;
-      // Continue to next model in the list
       continue;
     }
   }
 
-  // If we reach here, all tried models failed
-  throw lastError || new Error('All AI models failed to respond. Please check your connection.');
+  throw lastError || new Error('All AI models failed to respond. Please check your API keys.');
 }
 
 function formatGeminiError(error: any, fallbackMessage: string): Error {
@@ -182,7 +214,7 @@ export async function generateContentWithSearch(prompt: string, model: AIModel =
 export async function analyzeThumbnails(images: { data: string, mimeType: string }[], context: string, model: AIModel = 'Nemotron') {
   // Vision tasks are currently only supported by Gemini in this app
   try {
-    if (!apiKey) throw new Error('Gemini API key is missing.');
+    if (!apiKey || !ai) throw new Error('Gemini API key is missing.');
     const parts: any[] = images.map(img => ({
       inlineData: {
         data: img.data.split(',')[1], // Remove data:image/jpeg;base64, prefix
@@ -202,7 +234,7 @@ export async function analyzeThumbnails(images: { data: string, mimeType: string
     });
 
     const response = await ai.models.generateContent({
-      model: 'models/gemini-2.0-flash', // Use 2.0 flash for vision
+      model: 'models/gemini-2.0-flash',
       contents: [{ role: 'user', parts }]
     });
     return response.text;
@@ -267,13 +299,12 @@ export async function analyzeChannel(statsOrUrl: string, language: string = 'Eng
       return parseJSONResponse(resText);
     } catch (e) {
       // Fallback to Gemini if search fails or other error
-      if (apiKey) {
+    if (apiKey && ai) {
         const response = await ai.models.generateContent({
           model: 'models/gemini-2.0-flash',
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
           // @ts-ignore
           tools: isUrl ? [{ googleSearch: {} }] : undefined,
-          config: { responseMimeType: "application/json" }
         });
         return parseJSONResponse(response.text || '{}');
       }
@@ -303,7 +334,7 @@ export async function generateMetadata(topic: string, language: string = 'Englis
 
     if (model === 'Gemini' || model === 'Auto') {
       try {
-        if (!apiKey) throw new Error('API key is missing.');
+        if (!apiKey || !ai) throw new Error('Gemini API key is missing.');
         const response = await ai.models.generateContent({
           model: 'models/gemini-2.0-flash',
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
@@ -422,7 +453,7 @@ export async function generateVisualPrompts(script: string, duration: string, pr
 
     if (model === 'Gemini' || model === 'Auto') {
       try {
-        if (!apiKey) throw new Error('API key is missing.');
+        if (!apiKey || !ai) throw new Error('Gemini API key is missing.');
         const response = await ai.models.generateContent({
           model: 'models/gemini-2.0-flash',
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
