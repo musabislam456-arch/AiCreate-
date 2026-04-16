@@ -55,7 +55,7 @@ export function AdvancedToolPage() {
   const { addHistory } = useAppStore();
   const [input, setInput] = useState('');
   const [language, setLanguage] = useState(() => localStorage.getItem('creatorai_language') || 'English');
-  const [selectedAIModel, setSelectedAIModel] = useState<AIModel>(() => (localStorage.getItem('creatorai_model') as AIModel) || 'ChatGPT');
+  const [selectedAIModel, setSelectedAIModel] = useState<AIModel>(() => (localStorage.getItem('creatorai_model') as AIModel) || 'Auto');
   const [answerMode, setAnswerMode] = useState<'short' | 'detailed'>(() => (localStorage.getItem('creatorai_answer_mode') as 'short' | 'detailed') || 'short');
   const [output, setOutput] = useState<any>('');
   const [isLoading, setIsLoading] = useState(false);

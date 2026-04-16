@@ -30,7 +30,7 @@ export function FloatingChat() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [language, setLanguage] = useState('English');
-  const [selectedAIModel, setSelectedAIModel] = useState<AIModel>('ChatGPT');
+  const [selectedAIModel, setSelectedAIModel] = useState<AIModel>('Auto');
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

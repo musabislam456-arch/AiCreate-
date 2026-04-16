@@ -1,90 +1,95 @@
 import { GoogleGenAI, Type } from '@google/genai';
 
-// Support both AI Studio (process.env) and Vercel (import.meta.env)
+// API Keys
 const apiKey = process.env.GEMINI_API_KEY || (import.meta as any).env?.VITE_GEMINI_API_KEY;
-
-if (!apiKey) {
-  console.warn('GEMINI_API_KEY is missing. AI features will not work.');
-}
+const openrouterKey = process.env.OPENROUTER_API_KEY || (import.meta as any).env?.VITE_OPENROUTER_API_KEY;
+const groqKey = process.env.GROQ_API_KEY || (import.meta as any).env?.VITE_GROQ_API_KEY;
+const githubToken = process.env.GITHUB_TOKEN || (import.meta as any).env?.VITE_GITHUB_TOKEN;
 
 export const ai = new GoogleGenAI({ apiKey: apiKey || 'dummy-key' });
 
-// Puter.js integration
-declare global {
-  interface Window {
-    puter: any;
-  }
-}
+export type AIModel = 
+  | 'Gemini' 
+  | 'Nemotron' 
+  | 'GLM-4.5' 
+  | 'GPT-OSS-Free' 
+  | 'GPT-OSS-Groq' 
+  | 'Llama-3.1' 
+  | 'Llama-3.3' 
+  | 'Qwen-3' 
+  | 'GPT-5' 
+  | 'Grok-3' 
+  | 'DeepSeek-V3' 
+  | 'Auto';
 
-export type AIModel = 'Gemini' | 'ChatGPT' | 'Claude' | 'DeepSeek' | 'DeepSeek-Reasoner' | 'Grok' | 'Auto';
-
-const MODEL_MAPPING: Record<string, string> = {
-  'ChatGPT': 'openai/gpt-5.2-chat',
-  'Claude': 'claude-sonnet-4.5',
-  'DeepSeek': 'deepseek-v3.2',
-  'DeepSeek-Reasoner': 'deepseek-reasoner',
-  'Grok': 'grok-4-fast',
+const PROVIDER_CONFIG: Record<string, { provider: 'openrouter' | 'groq' | 'github', model: string, reasoning?: boolean }> = {
+  'Nemotron': { provider: 'openrouter', model: 'nvidia/nemotron-3-super-120b-a12b:free', reasoning: true },
+  'GLM-4.5': { provider: 'openrouter', model: 'z-ai/glm-4.5-air:free' },
+  'GPT-OSS-Free': { provider: 'openrouter', model: 'openai/gpt-oss-120b:free', reasoning: true },
+  'GPT-OSS-Groq': { provider: 'groq', model: 'openai/gpt-oss-120b' },
+  'Llama-3.1': { provider: 'groq', model: 'llama-3.1-8b-instant' },
+  'Llama-3.3': { provider: 'groq', model: 'llama-3.3-70b-versatile' },
+  'Qwen-3': { provider: 'groq', model: 'qwen/qwen3-32b' },
+  'GPT-5': { provider: 'github', model: 'openai/gpt-5' },
+  'Grok-3': { provider: 'github', model: 'xai/grok-3' },
+  'DeepSeek-V3': { provider: 'github', model: 'deepseek/DeepSeek-V3-0324' },
 };
 
-async function callExternalAI(prompt: string, model: string = 'openai/gpt-5.2-chat', useSearch: boolean = false): Promise<string> {
-  if (!window.puter) {
-    throw new Error('AI engine not loaded. Please refresh the page.');
+async function callExternalAI(prompt: string, config: { provider: string, model: string, reasoning?: boolean }): Promise<string> {
+  let url = '';
+  let headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  let body: any = {
+    model: config.model,
+    messages: [{ role: 'user', content: prompt }]
+  };
+
+  if (config.provider === 'openrouter') {
+    if (!openrouterKey) throw new Error('OpenRouter API key is missing.');
+    url = 'https://openrouter.ai/api/v1/chat/completions';
+    headers['Authorization'] = `Bearer ${openrouterKey}`;
+    if (config.reasoning) {
+      body.reasoning = { enabled: true };
+    }
+  } else if (config.provider === 'groq') {
+    if (!groqKey) throw new Error('Groq API key is missing.');
+    url = 'https://api.groq.com/openai/v1/chat/completions';
+    headers['Authorization'] = `Bearer ${groqKey}`;
+  } else if (config.provider === 'github') {
+    if (!githubToken) throw new Error('GitHub Token is missing.');
+    url = 'https://models.github.ai/inference/chat/completions';
+    headers['Authorization'] = `Bearer ${githubToken}`;
   }
 
   try {
-    const options: any = {
-      model: model,
-      stream: true
-    };
+    const response = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body)
+    });
 
-    if (useSearch) {
-      options.tools = [{ type: "web_search" }];
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error?.message || `API error: ${response.status}`);
     }
 
-    const response = await window.puter.ai.chat(prompt, options);
-
-    if (!response) {
-      throw new Error('No response from AI engine');
-    }
-
-    let result = "";
+    const data = await response.json();
+    const message = data.choices[0].message;
     
-    if (Symbol.asyncIterator in Object(response)) {
-      for await (const part of response) {
-        const text = part?.text || part?.choices?.[0]?.delta?.content || "";
-        const reasoning = part?.reasoning || "";
-        
-        if (reasoning) {
-          result += reasoning + "\n";
-        }
-        result += text;
-      }
-    } else {
-      result = response.text || response.message?.content || response.choices?.[0]?.message?.content || String(response);
+    let result = message.content || '';
+    if (message.reasoning_details) {
+      // If there's reasoning, we can prepend it or just return content. 
+      // User example shows preserving it for next call, but for UI we usually want the content.
+      // We'll just return the content for now.
     }
-
-    if (!result) {
-      throw new Error('AI engine returned an empty response');
-    }
-
+    
     return result;
   } catch (error: any) {
-    console.error('Detailed AI API Error:', error);
-    
-    let errorMessage = 'Unknown error';
-    if (typeof error === 'string') {
-      errorMessage = error;
-    } else if (error?.message) {
-      errorMessage = error.message;
-    } else if (error?.error?.message) {
-      errorMessage = error.error.message;
-    }
-
-    throw new Error(`AI API Error: ${errorMessage}`);
+    console.error(`Error calling ${config.provider}:`, error);
+    throw error;
   }
 }
 
-export async function generateAIResponse(prompt: string, selectedModel: AIModel = 'ChatGPT', useSearch: boolean = false, answerMode: 'short' | 'detailed' = 'short'): Promise<string> {
+export async function generateAIResponse(prompt: string, selectedModel: AIModel = 'Nemotron', useSearch: boolean = false, answerMode: 'short' | 'detailed' = 'short'): Promise<string> {
   const modeInstruction = answerMode === 'short' 
     ? "IMPORTANT: Provide a quick, short, and concise answer. Do not be overly detailed."
     : "IMPORTANT: Provide a very long, detailed, and comprehensive answer. Explain thoroughly.";
@@ -94,11 +99,11 @@ export async function generateAIResponse(prompt: string, selectedModel: AIModel 
   const modelsToTry: AIModel[] = [];
   
   if (selectedModel === 'Auto') {
-    modelsToTry.push('ChatGPT', 'Gemini', 'Claude', 'DeepSeek');
+    modelsToTry.push('Nemotron', 'Gemini', 'Llama-3.3', 'GPT-5');
   } else {
     modelsToTry.push(selectedModel);
     // Add fallbacks if the primary choice fails
-    if (selectedModel !== 'ChatGPT') modelsToTry.push('ChatGPT');
+    if (selectedModel !== 'Nemotron') modelsToTry.push('Nemotron');
     if (selectedModel !== 'Gemini') modelsToTry.push('Gemini');
   }
 
@@ -115,8 +120,9 @@ export async function generateAIResponse(prompt: string, selectedModel: AIModel 
         });
         return response.text || '';
       } else {
-        const puterModel = MODEL_MAPPING[model] || 'openai/gpt-5.2-chat';
-        return await callExternalAI(enhancedPrompt, puterModel, useSearch);
+        const config = PROVIDER_CONFIG[model];
+        if (!config) throw new Error(`Unknown model: ${model}`);
+        return await callExternalAI(enhancedPrompt, config);
       }
     } catch (error: any) {
       console.error(`Model ${model} failed:`, error);
@@ -158,7 +164,7 @@ function formatGeminiError(error: any, fallbackMessage: string): Error {
   return new Error(`${fallbackMessage}: ${msg || 'Unknown error'}`);
 }
 
-export async function generateContent(prompt: string, model: AIModel = 'ChatGPT', answerMode: 'short' | 'detailed' = 'short') {
+export async function generateContent(prompt: string, model: AIModel = 'Nemotron', answerMode: 'short' | 'detailed' = 'short') {
   try {
     return await generateAIResponse(prompt, model, false, answerMode);
   } catch (error: any) {
@@ -167,41 +173,16 @@ export async function generateContent(prompt: string, model: AIModel = 'ChatGPT'
   }
 }
 
-export async function generateContentWithSearch(prompt: string, model: AIModel = 'ChatGPT', answerMode: 'short' | 'detailed' = 'short') {
-  // If model is not Gemini/Auto, we use Puter's web search
-  if (model !== 'Gemini' && model !== 'Auto') {
-    return await generateAIResponse(prompt, model, true, answerMode);
-  }
-
-  const modeInstruction = answerMode === 'short' 
-    ? "IMPORTANT: Provide a quick, short, and concise answer. Do not be overly detailed."
-    : "IMPORTANT: Provide a very long, detailed, and comprehensive answer. Explain thoroughly.";
-
-  const enhancedPrompt = prompt + "\n\n" + modeInstruction;
-
-  try {
-    if (!apiKey) throw new Error('API key is missing.');
-    const response = await ai.models.generateContent({
-      model: 'models/gemini-2.0-flash',
-      contents: [{ role: 'user', parts: [{ text: enhancedPrompt }] }],
-      // @ts-ignore - tools might not be in the type definition but supported by API
-      tools: [{ googleSearch: {} }],
-    });
-    return response.text || '';
-  } catch (error: any) {
-    return await generateAIResponse(prompt, model, true, answerMode);
-  }
+export async function generateContentWithSearch(prompt: string, model: AIModel = 'Nemotron', answerMode: 'short' | 'detailed' = 'short') {
+  // If model is not Gemini/Auto, we use external AI (search is handled by prompt if needed, 
+  // but Puter's search is removed, so we just rely on model knowledge or specific search tools if available)
+  return await generateAIResponse(prompt, model, true, answerMode);
 }
 
-export async function analyzeThumbnails(images: { data: string, mimeType: string }[], context: string, model: AIModel = 'ChatGPT') {
+export async function analyzeThumbnails(images: { data: string, mimeType: string }[], context: string, model: AIModel = 'Nemotron') {
   // Vision tasks are currently only supported by Gemini in this app
-  // If model is not Gemini/Auto, we fallback to Gemini anyway or error out
-  // But for now, we'll try to use Gemini and fallback to a text-only analysis if needed?
-  // Actually, Puter doesn't support vision easily in this simple way.
-  // We'll keep Gemini for vision but use the routing for the text part if possible.
-  
   try {
-    if (!apiKey) throw new Error('API key is missing.');
+    if (!apiKey) throw new Error('Gemini API key is missing.');
     const parts: any[] = images.map(img => ({
       inlineData: {
         data: img.data.split(',')[1], // Remove data:image/jpeg;base64, prefix
@@ -243,7 +224,7 @@ function parseJSONResponse(text: string) {
   }
 }
 
-export async function analyzeChannel(statsOrUrl: string, language: string = 'English', model: AIModel = 'ChatGPT') {
+export async function analyzeChannel(statsOrUrl: string, language: string = 'English', model: AIModel = 'Nemotron') {
   try {
     const isUrl = statsOrUrl.startsWith('http');
     const prompt = `Act as an expert YouTube data analyst. Analyze the following channel ${isUrl ? 'URL' : 'statistics/context'}.
@@ -279,7 +260,7 @@ export async function analyzeChannel(statsOrUrl: string, language: string = 'Eng
     Channel Info: ${statsOrUrl}`;
 
     // For Channel Analysis, we prefer models with search capabilities
-    const preferredModel = model === 'Auto' ? 'ChatGPT' : model;
+    const preferredModel = model === 'Auto' ? 'Nemotron' : model;
     
     try {
       const resText = await generateAIResponse(prompt + "\nIMPORTANT: Return ONLY valid JSON. Use web search to find real data.", preferredModel, true);
@@ -304,7 +285,7 @@ export async function analyzeChannel(statsOrUrl: string, language: string = 'Eng
   }
 }
 
-export async function generateMetadata(topic: string, language: string = 'English', model: AIModel = 'ChatGPT') {
+export async function generateMetadata(topic: string, language: string = 'English', model: AIModel = 'Nemotron') {
   try {
     const prompt = `Generate a complete YouTube metadata package for a video about: "${topic}". 
     Return the response in JSON format.
@@ -342,7 +323,7 @@ export async function generateMetadata(topic: string, language: string = 'Englis
   }
 }
 
-export async function chatWithAssistant(message: string, history: {role: string, text: string}[], language: string = 'English', model: AIModel = 'ChatGPT') {
+export async function chatWithAssistant(message: string, history: {role: string, text: string}[], language: string = 'English', model: AIModel = 'Nemotron') {
   try {
     let fullMessage = `System Instruction: You are an expert YouTube and social media growth assistant. Provide highly actionable, strategic, and encouraging responses. Always respond in ${language}.\n\n`;
     
@@ -360,7 +341,7 @@ export async function chatWithAssistant(message: string, history: {role: string,
   }
 }
 
-export async function generateAdvancedScript(topic: string, category: string, types: string[], length: string, language: string, model: AIModel = 'ChatGPT', format: 'Full' | 'Paragraph' = 'Full') {
+export async function generateAdvancedScript(topic: string, category: string, types: string[], length: string, language: string, model: AIModel = 'Nemotron', format: 'Full' | 'Paragraph' = 'Full') {
   try {
     const prompt = format === 'Paragraph' 
       ? `Write a highly engaging video script about "${topic}" as a single, long, detailed paragraph.
@@ -394,7 +375,7 @@ export async function generateScriptPart(
   partNumber: number, 
   totalParts: number, 
   previousParts: string[], 
-  model: AIModel = 'ChatGPT'
+  model: AIModel = 'Nemotron'
 ) {
   try {
     const prompt = `Write Part ${partNumber} of ${totalParts} for a highly engaging video script about "${topic}".
@@ -416,29 +397,17 @@ export async function generateScriptPart(
 }
 
 export async function textToSpeech(text: string, voice: string = 'alloy', responseFormat: string = 'mp3') {
-  if (!window.puter) {
-    throw new Error('Puter.js not loaded.');
-  }
+  // Puter removed. Using Web Speech API as fallback.
   try {
-    const audio = await window.puter.ai.txt2speech(text, {
-      provider: 'openai',
-      model: 'gpt-4o-mini-tts',
-      voice,
-      response_format: responseFormat,
-      instructions: 'Keep the delivery clear and friendly.',
-    });
-    if (audio && typeof audio.play === 'function') {
-      audio.play();
-      return audio;
-    } else {
-      throw new Error('Invalid audio object returned from Puter');
-    }
+    const utterance = new SpeechSynthesisUtterance(text);
+    window.speechSynthesis.speak(utterance);
+    return { play: () => window.speechSynthesis.speak(utterance) };
   } catch (error: any) {
     console.error('TTS Error:', error);
     throw new Error('Failed to play audio. Please try again.');
   }
 }
-export async function generateVisualPrompts(script: string, duration: string, promptLanguage: string = 'English', voiceoverLanguage: string = 'English', model: AIModel = 'ChatGPT') {
+export async function generateVisualPrompts(script: string, duration: string, promptLanguage: string = 'English', voiceoverLanguage: string = 'English', model: AIModel = 'Nemotron') {
   try {
     const prompt = `You are an expert video editor and director. Break down the following script into visual scenes. Each scene should be approximately ${duration} long.
       
