@@ -6,7 +6,7 @@ import { useAppStore } from '../lib/store';
 import { Button } from '../components/ui/button';
 import { Textarea } from '../components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Loader2, Copy, CheckCircle2, MessageSquare, ArrowLeft, ImagePlus, Download, Share2, Briefcase, TrendingDown, Film, MessageCircle, TrendingUp, CalendarDays, RefreshCw, Cpu, Volume2, Wand2, Bot, Sparkles, Star } from 'lucide-react';
+import { Loader2, Copy, CheckCircle2, MessageSquare, ArrowLeft, ImagePlus, Download, Share2, Briefcase, TrendingDown, Film, MessageCircle, TrendingUp, CalendarDays, RefreshCw, Cpu, Volume2, Wand2, Bot, Sparkles, Star, Layout, Smile, Type, Zap, MousePointerClick } from 'lucide-react';
 import { Badge } from '../components/ui/badge';
 import { cn } from '../lib/utils';
 import * as Icons from 'lucide-react';
@@ -41,11 +41,28 @@ const RESOLUTIONS = [
   { label: "8K (7680x4320)", value: "7680x4320" }
 ];
 
+const ASPECT_RATIOS = [
+  { label: "16:9 (YouTube)", value: "16:9" },
+  { label: "9:16 (Shorts/Reels)", value: "9:16" },
+  { label: "1:1 (Instagram)", value: "1:1" },
+  { label: "4:3 (Standard)", value: "4:3" },
+  { label: "21:9 (Cinematic)", value: "21:9" }
+];
+
 const IMAGE_MODELS = [
   { label: "Flux (Default)", value: "flux" },
   { label: "Anima-Banna", value: "anima-banna" },
   { label: "Turbo", value: "turbo" },
   { label: "Any Dark", value: "any-dark" }
+];
+
+const ATTENTION_SECTIONS = [
+  { id: 'eye-catching', label: 'Eye-Catching', icon: Sparkles, description: 'High contrast, bold colors' },
+  { id: 'surprise', label: 'Surprise Element', icon: Zap, description: 'Unexpected visual twists' },
+  { id: 'clickbait', label: 'High CTR', icon: MousePointerClick, description: 'Designed for maximum clicks' },
+  { id: 'minimalist', label: 'Clean & Minimal', icon: Layout, description: 'Focus on the main subject' },
+  { id: 'emotional', label: 'Emotional Face', icon: Smile, description: 'Strong facial expressions' },
+  { id: 'bold-text', label: 'Bold Text Space', icon: Type, description: 'Clear area for typography' },
 ];
 
 const CircularProgress = ({ progress }: { progress: number }) => {
@@ -103,11 +120,13 @@ export function ToolPage() {
   // Thumbnail Generator specific states
   const [progress, setProgress] = useState(0);
   const [resolution, setResolution] = useState('1920x1080');
+  const [aspectRatio, setAspectRatio] = useState('16:9');
   const [aiModel, setAiModel] = useState('flux');
   const [thumbnailUrl, setThumbnailUrl] = useState('');
   const [thumbnailPrompt, setThumbnailPrompt] = useState('');
   const [recommendedUrls, setRecommendedUrls] = useState<string[]>([]);
   const [recommendedPrompts, setRecommendedPrompts] = useState<string[]>([]);
+  const [attentionSections, setAttentionSections] = useState<string[]>([]);
 
   useEffect(() => {
     localStorage.setItem('creatorai_language', language);
@@ -163,7 +182,10 @@ export function ToolPage() {
       if (tool.id === 'viral-hook-generator') finalInput = `Topic: ${input}\nTone: ${extraInput1 || 'Engaging'}`;
       if (tool.id === 'shorts-script-generator') finalInput = `Concept: ${input}\nTarget Audience: ${extraInput1}`;
       if (tool.id === 'ai-rewrite-tool') finalInput = `Original Script: ${input}\nGoal: ${extraInput1 || 'More engaging'}`;
-      if (tool.id === 'thumbnail-generator') finalInput = `Video Title/Topic: ${input}\nStyle: ${extraInput1 || 'Cinematic'}`;
+      if (tool.id === 'thumbnail-generator') {
+        const attentionStr = attentionSections.length > 0 ? `\nAttention Elements: ${attentionSections.join(', ')}` : '';
+        finalInput = `Video Title/Topic: ${input}\nStyle: ${extraInput1 || 'Cinematic'}\nAspect Ratio: ${aspectRatio}${attentionStr}\n\nCRITICAL INSTRUCTIONS:\nCreate a professional image with a clean and balanced composition. Ensure length and width are balanced for the requested aspect ratio (${aspectRatio}). Main subject: a realistic young man with a clear, sharp face, natural skin tones, and a controlled surprised expression (not distorted), looking at a laptop screen. Lighting: soft cinematic lighting with balanced highlights and shadows, no overexposure, no harsh glow, face clearly visible. Background: slightly blurred modern workspace with subtle depth of field, not cluttered, minimal distractions. Objects: a few floating dollar bills placed naturally (not too many), well spaced, no overlapping the face. Composition: subject centered, proper framing, rule of thirds, clean layout. Color grading: vibrant but balanced colors, no oversaturation, professional style. Text space: leave empty space on one side for bold text. Quality: ultra realistic, sharp focus, high detail, no blur, no distortion, no noise. Style: cinematic, professional, high CTR design.`;
+      }
       if (tool.id === 'sponsorship-pitch') finalInput = `Channel/Niche: ${extraInput1}\nAudience Size: ${extraInput2}\nTarget Brand: ${input}`;
       if (tool.id === 'trend-adapter') finalInput = `Channel Niche: ${extraInput1}\nTrend/Audio: ${input}`;
       if (tool.id === 'content-scheduler') {
@@ -198,7 +220,16 @@ export function ToolPage() {
         setThumbnailPrompt(mainPrompt);
         setRecommendedPrompts(altPrompts);
         
-        const [width, height] = resolution.split('x');
+        let [width, height] = resolution.split('x').map(Number);
+        if (aspectRatio === '9:16') {
+          [width, height] = [height, width];
+        } else if (aspectRatio === '1:1') {
+          width = height;
+        } else if (aspectRatio === '4:3') {
+          width = Math.round(height * (4/3));
+        } else if (aspectRatio === '21:9') {
+          width = Math.round(height * (21/9));
+        }
         
         const createImageUrl = (p: string) => {
           const seed = Math.floor(Math.random() * 1000000);
@@ -393,7 +424,20 @@ export function ToolPage() {
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-sm font-bold">Aspect Ratio</Label>
+                        <Select value={aspectRatio} onValueChange={setAspectRatio}>
+                          <SelectTrigger className="rounded-xl">
+                            <SelectValue placeholder="Aspect Ratio" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {ASPECT_RATIOS.map(ar => (
+                              <SelectItem key={ar.value} value={ar.value}>{ar.label}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                       <div className="space-y-2">
                         <Label className="text-sm font-bold">Resolution</Label>
                         <Select value={resolution} onValueChange={setResolution}>
@@ -419,6 +463,44 @@ export function ToolPage() {
                             ))}
                           </SelectContent>
                         </Select>
+                      </div>
+                    </div>
+                    <div className="space-y-3 pt-2">
+                      <Label className="text-sm font-bold flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-primary" />
+                        Attention Section (Select multiple)
+                      </Label>
+                      <div className="grid grid-cols-2 gap-3">
+                        {ATTENTION_SECTIONS.map(section => {
+                          const isSelected = attentionSections.includes(section.label);
+                          const Icon = section.icon;
+                          return (
+                            <div 
+                              key={section.id}
+                              onClick={() => {
+                                setAttentionSections(prev => 
+                                  prev.includes(section.label) 
+                                    ? prev.filter(l => l !== section.label)
+                                    : [...prev, section.label]
+                                );
+                              }}
+                              className={cn(
+                                "flex flex-col p-3 rounded-xl border-2 cursor-pointer transition-all duration-200",
+                                isSelected 
+                                  ? "border-primary bg-primary/10 shadow-sm" 
+                                  : "border-muted hover:border-primary/50 hover:bg-muted/50"
+                              )}
+                            >
+                              <div className="flex items-center gap-2 mb-1">
+                                <Icon className={cn("w-4 h-4", isSelected ? "text-primary" : "text-muted-foreground")} />
+                                <span className={cn("text-sm font-bold", isSelected ? "text-primary" : "text-foreground")}>
+                                  {section.label}
+                                </span>
+                              </div>
+                              <span className="text-xs text-muted-foreground">{section.description}</span>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   </>
