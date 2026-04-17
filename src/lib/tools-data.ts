@@ -6,7 +6,10 @@ export const CORE_TOOLS = [
     icon: 'FishHook',
     category: 'Shorts & Reels',
     promptTemplate: 'Generate 5 highly engaging, viral hooks for a short-form video about: "{input}". The hooks should be designed to grab attention in the first 3 seconds. Make them punchy, intriguing, and tailored for TikTok/Reels/Shorts. Please provide the output in {language}.',
-    supportsLanguage: true
+    supportsLanguage: true,
+    metaTitle: 'Viral Hook Generator AI Free | CreatorAI',
+    metaDescription: 'Generate scroll-stopping, 3-second viral hooks for TikTok, YouTube Shorts, and Reels instantly for free.',
+    seoContent: 'Our Free AI Viral Hook Generator is trained on thousands of viral shorts. The first 3 seconds are critical for viewer retention. Use this tool to grab attention immediately and improve your retention graphs.'
   },
   {
     id: 'shorts-script-generator',
@@ -15,7 +18,10 @@ export const CORE_TOOLS = [
     icon: 'FileText',
     category: 'Shorts & Reels',
     promptTemplate: 'Write a highly engaging, fast-paced 60-second YouTube Shorts script about: "{input}". Include visual cues [in brackets], a strong hook, concise valuable body content, and a clear call to action at the end. Keep sentences short. Please provide the output in {language}.',
-    supportsLanguage: true
+    supportsLanguage: true,
+    metaTitle: 'YouTube Shorts Script Generator AI | CreatorAI',
+    metaDescription: 'Write engaging 30-60 second YouTube Shorts and TikTok scripts with AI. Optimized for high audience retention.',
+    seoContent: 'The YouTube Shorts Script Generator AI writes fast-paced, high value content for your audience. With clear visual cues and precise pacing, scripting for short-form has never been easier.'
   },
   {
     id: 'caption-generator',
@@ -24,7 +30,10 @@ export const CORE_TOOLS = [
     icon: 'Type',
     category: 'Social Media',
     promptTemplate: 'Write an engaging, trendy, and relatable caption for an Instagram/TikTok post about: "{input}". Include a hook, the main message, a call to action (like "save this" or "comment below"), and relevant emojis. Please provide the output in {language}.',
-    supportsLanguage: true
+    supportsLanguage: true,
+    metaTitle: 'Instagram & TikTok Caption Generator AI | CreatorAI',
+    metaDescription: 'Create trendy, relatable captions for Instagram and TikTok with optimized hashtags and call-to-actions.',
+    seoContent: 'Maximize your reach on social media. Our Caption Generator AI understands modern slang, knows how to drive comments, and structures your captions to include effective CTAs and hashtags.'
   },
   {
     id: 'hashtag-generator',
@@ -33,7 +42,10 @@ export const CORE_TOOLS = [
     icon: 'Hash',
     category: 'SEO & Discovery',
     promptTemplate: 'Generate a strategic list of 30 hashtags for a social media post about: "{input}". Group them into: 1) Broad/Popular (10), 2) Niche/Specific (15), and 3) Trending/Community (5). Do not use banned hashtags. Please provide the output in {language}.',
-    supportsLanguage: true
+    supportsLanguage: true,
+    metaTitle: 'Smart Hashtag Generator for Instagram & TikTok | CreatorAI',
+    metaDescription: 'Find the best niche, popular, and trending hashtags for your posts to maximize algorithmic discovery.',
+    seoContent: 'Using the right hashtags can multiply your views. The Smart Hashtag Generator analyzes your topic to group hashtags into broad, niche, and trending categories, avoiding shadowbans.'
   },
   {
     id: 'video-idea-generator',
@@ -42,7 +54,10 @@ export const CORE_TOOLS = [
     icon: 'Lightbulb',
     category: 'Ideation',
     promptTemplate: 'Brainstorm 10 highly clickable and viral video ideas for a YouTube channel in the niche: "{input}". For each idea, provide a catchy title and a 1-sentence summary of the video concept. Please provide the output in {language}.',
-    supportsLanguage: true
+    supportsLanguage: true,
+    metaTitle: 'YouTube Video Idea Generator AI | CreatorAI',
+    metaDescription: 'Never run out of content ideas. Generate unlimited, highly clickable video ideas for your specific niche.',
+    seoContent: 'Struggling with what to film next? The Video Idea Generator brainstorms 10 highly viral video concepts based on proven YouTube formulas. Perfect for when you have creator block.'
   },
   {
     id: 'seo-title-generator',
@@ -51,7 +66,10 @@ export const CORE_TOOLS = [
     icon: 'Search',
     category: 'SEO & Discovery',
     promptTemplate: 'Generate 10 highly clickable, high-CTR YouTube titles for a video about: "{input}". The titles should evoke curiosity, urgency, or extreme value. Keep them under 60 characters for optimal display. Please provide the output in {language}.',
-    supportsLanguage: true
+    supportsLanguage: true,
+    metaTitle: 'YouTube Title Generator AI Free | Keyword Optimized | CreatorAI',
+    metaDescription: 'Generate high-CTR, click-worthy YouTube titles that rank in search. 100% free AI title generator.',
+    seoContent: 'A good thumbnail means nothing without a clickable title. Our YouTube Title Generator AI crafts titles that combine emotional triggers, curiosity, and high-search-volume keywords.'
   },
   {
     id: 'ai-rewrite-tool',
@@ -60,7 +78,10 @@ export const CORE_TOOLS = [
     icon: 'PenTool',
     category: 'Writing',
     promptTemplate: 'Rewrite the following text to make it highly engaging, persuasive, and optimized for a social media audience. Improve the flow, fix any grammar issues, and make it sound natural and exciting: "{input}". Please provide the output in {language}.',
-    supportsLanguage: true
+    supportsLanguage: true,
+    metaTitle: 'AI Script & Text Rewrite Tool for Creators | CreatorAI',
+    metaDescription: 'Rewrite and optimize your YouTube scripts, descriptions, and posts to be more engaging and persuasive.',
+    seoContent: 'Have a script that feels a bit boring? The AI Rewrite Tool enhances your phrasing to be more persuasive, improves your flow, and adds natural hooks to keep viewers watching.'
   },
   {
     id: 'faceless-video-script',
@@ -69,7 +90,10 @@ export const CORE_TOOLS = [
     icon: 'Ghost',
     category: 'YouTube Long-form',
     promptTemplate: 'Write a script for a faceless YouTube video about: "{input}". Format it with two columns (or clear sections): "Visual/B-Roll" and "Voiceover". Ensure the pacing is good for a 5-8 minute video, with a strong intro and engaging storytelling. Please provide the output in {language}.',
-    supportsLanguage: true
+    supportsLanguage: true,
+    metaTitle: 'Faceless YouTube Video Script Generator | CreatorAI',
+    metaDescription: 'Generate high-quality scripts for cash cow and faceless channels with B-roll visual cues included.',
+    seoContent: 'Building a faceless YouTube channel requires tight scripting. This Faceless Video Script Generator provides voiceover text right alongside B-roll suggestions for easy editing.'
   },
   {
     id: 'bio-generator',
@@ -78,7 +102,10 @@ export const CORE_TOOLS = [
     icon: 'UserCircle',
     category: 'Social Media',
     promptTemplate: 'Write 3 different options for a social media bio (Instagram/TikTok/Twitter) for a creator focused on: "{input}". Option 1: Professional & Clean. Option 2: Fun & Emoji-heavy. Option 3: Short & Punchy. Include a placeholder for a link. Please provide the output in {language}.',
-    supportsLanguage: true
+    supportsLanguage: true,
+    metaTitle: 'Social Media Bio Generator | Instagram & TikTok | CreatorAI',
+    metaDescription: 'Generate a professional, optimized bio for Instagram, TikTok, and Twitter to convert profile visits.',
+    seoContent: 'Your bio is your digital elevator pitch. Use the Social Media Bio Generator to create options ranging from highly professional to fun and emoji-heavy, maximizing your follower conversion rate.'
   },
   {
     id: 'comment-reply-generator',
@@ -87,7 +114,10 @@ export const CORE_TOOLS = [
     icon: 'MessageSquare',
     category: 'Community',
     promptTemplate: 'Generate 3 different engaging and polite replies to the following comment from a viewer: "{input}". Option 1: Appreciative and warm. Option 2: Funny/Witty. Option 3: Asking a follow-up question to boost engagement. Please provide the output in {language}.',
-    supportsLanguage: true
+    supportsLanguage: true,
+    metaTitle: 'YouTube Comment Reply Generator AI | CreatorAI',
+    metaDescription: 'Reply to your YouTube comments 10x faster with AI-generated witty, appreciative, and engaging replies.',
+    seoContent: 'Audience engagement is a key metric for YouTube growth. The Comment Reply Generator saves you hours by drafting perfect, human-like responses to your community, boosting viewer loyalty.'
   },
   {
     id: 'thumbnail-generator',

@@ -27,8 +27,7 @@ import { Sparkles, LogOut, History, User, Mail, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export function Navbar() {
-  const { user, login, loginWithEmail, signUpWithEmail, logout } = useAppStore();
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const { user, login, loginWithEmail, signUpWithEmail, logout, isLoginModalOpen, setIsLoginModalOpen } = useAppStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -39,7 +38,7 @@ export function Navbar() {
       setIsLoading(true);
       await login();
       toast.success('Signed in successfully!');
-      setIsLoginOpen(false);
+      setIsLoginModalOpen(false);
     } catch (error: any) {
       toast.error(error.message || 'Google Login failed');
     } finally {
@@ -54,7 +53,7 @@ export function Navbar() {
       setIsLoading(true);
       await loginWithEmail(email, password);
       toast.success('Signed in successfully!');
-      setIsLoginOpen(false);
+      setIsLoginModalOpen(false);
     } catch (error: any) {
       toast.error(error.message || 'Login failed');
     } finally {
@@ -69,7 +68,7 @@ export function Navbar() {
       setIsLoading(true);
       await signUpWithEmail(email, password, name);
       toast.success('Account created successfully!');
-      setIsLoginOpen(false);
+      setIsLoginModalOpen(false);
     } catch (error: any) {
       toast.error(error.message || 'Sign up failed');
     } finally {
@@ -152,7 +151,7 @@ export function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
+            <Dialog open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen}>
               <DialogTrigger render={<Button variant="default" size="sm">Sign In</Button>} />
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>

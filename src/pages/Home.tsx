@@ -27,6 +27,7 @@ export function Home() {
     e.preventDefault();
     if (!user) {
       toast.error('Please sign in to leave a review');
+      useAppStore.getState().setIsLoginModalOpen(true);
       return;
     }
     if (newComment.length < 5) {
@@ -50,8 +51,9 @@ export function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       <Helmet>
-        <title>CreatorAI – All-in-One AI Tools for YouTubers</title>
-        <meta name="description" content="Use advanced AI tools for YouTubers including script writer, channel analyzer and thumbnail generator." />
+        <title>CreatorAI – Best Free AI Tools for YouTubers & Content Creators</title>
+        <meta name="description" content="Supercharge your YouTube channel with CreatorAI's free AI tools for creators. Get AI script generators, thumbnail makers, viral hook generators, and SEO title optimization all in one place." />
+        <meta name="keywords" content="free AI tools for YouTubers, AI script generator, YouTube title generator AI free, AI thumbnail generator, YouTube SEO tools, best AI tools for creators 2026" />
       </Helmet>
 
       {/* Hero Section */}
@@ -65,7 +67,7 @@ export function Home() {
             SUPERCHARGE YOUR CONTENT WITH <span className="text-primary">CreatorAI</span>
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-2xl mx-auto text-balance">
-            The ultimate platform for <span className="text-foreground font-semibold">free AI tools for YouTubers</span>. Write, analyze, and grow faster than ever with the <span className="text-foreground font-semibold">best AI tools for creators 2026</span>.
+            The ultimate platform for <span className="text-foreground font-semibold">free AI tools for YouTubers</span>. Write scripts, generate viral hooks, and analyze metrics faster than ever with the <span className="text-foreground font-semibold">best AI tools for creators 2026</span>.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-6">
             <Button 
@@ -73,7 +75,7 @@ export function Home() {
               className="rounded-full px-10 h-14 text-lg font-bold shadow-xl shadow-primary/20 hover:scale-105 transition-transform"
               onClick={() => scrollToSection('core-tools')}
             >
-              Explore Tools
+              Explore Free AI Tools
             </Button>
             <Button 
               size="lg" 
@@ -81,7 +83,7 @@ export function Home() {
               className="rounded-full px-10 h-14 text-lg font-bold hover:bg-primary/5 hover:scale-105 transition-transform"
               onClick={() => scrollToSection('advanced-tools')}
             >
-              Advanced Features
+              Advanced YouTube SEO
             </Button>
           </div>
         </div>
@@ -90,6 +92,7 @@ export function Home() {
       {/* SEO Landing Pages Links */}
       <section className="py-12 bg-muted/30">
         <div className="container mx-auto px-4">
+          <h2 className="sr-only">Top Rated Free AI Tools</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Link to="/youtube-title-generator" className="flex items-center p-4 bg-background rounded-xl border hover:border-primary transition-colors">
               <Search className="w-5 h-5 mr-3 text-primary" />
@@ -110,9 +113,9 @@ export function Home() {
       {/* Core Tools Section */}
       <section id="core-tools" className="py-24 container mx-auto px-4">
         <div className="text-center mb-20">
-          <h2 className="text-4xl md:text-5xl font-black mb-6 tracking-tight">CORE AI TOOLS</h2>
+          <h2 className="text-4xl md:text-5xl font-black mb-6 tracking-tight">CORE AI TOOLS FOR CREATORS</h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Everything you need to write scripts, generate hooks, and optimize your content for maximum reach.
+            Everything you need for content ideation, YouTube SEO optimization, thumbnail generation, and viral hook creation.
           </p>
         </div>
 

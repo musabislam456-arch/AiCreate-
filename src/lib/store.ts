@@ -102,6 +102,8 @@ interface AppState {
   addHistory: (toolId: string, input: string, output: string) => Promise<void>;
   deleteHistory: (id: string) => Promise<void>;
   initialize: () => void;
+  isLoginModalOpen: boolean;
+  setIsLoginModalOpen: (isOpen: boolean) => void;
 }
 
 let unsubscribeHistory: (() => void) | null = null;
@@ -111,6 +113,8 @@ export const useAppStore = create<AppState>()((set, get) => ({
   comments: [],
   history: [],
   isAuthReady: false,
+  isLoginModalOpen: false,
+  setIsLoginModalOpen: (isOpen) => set({ isLoginModalOpen: isOpen }),
 
   initialize: () => {
     // Auth Listener

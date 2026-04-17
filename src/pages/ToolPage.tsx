@@ -324,8 +324,8 @@ export function ToolPage() {
   return (
     <div className="container mx-auto px-4 py-12 max-w-6xl">
       <Helmet>
-        <title>{tool.title} – Free AI Tools for YouTubers | CreatorAI</title>
-        <meta name="description" content={tool.description} />
+        <title>{(tool as any).metaTitle || `${tool.title} – Free AI Tools for YouTubers | CreatorAI`}</title>
+        <meta name="description" content={(tool as any).metaDescription || tool.description} />
       </Helmet>
       <Button variant="ghost" onClick={() => navigate(-1)} className="mb-8 -ml-4 text-muted-foreground hover:text-primary">
         <ArrowLeft className="w-4 h-4 mr-2" />
@@ -743,7 +743,7 @@ export function ToolPage() {
           <Card className="mb-12 bg-muted/30 border-dashed border-2">
             <CardContent className="py-10 text-center">
               <p className="text-muted-foreground text-lg mb-4">Sign in to share your thoughts with the community.</p>
-              <Button variant="outline" className="rounded-full px-8">Sign In Now</Button>
+              <Button onClick={() => useAppStore.getState().setIsLoginModalOpen(true)} variant="outline" className="rounded-full px-8">Sign In Now</Button>
             </CardContent>
           </Card>
         )}
@@ -778,7 +778,7 @@ export function ToolPage() {
         </div>
       </div>
 
-      {/* Internal Linking: Related Tools */}
+      {/* Related Tools */}
       <div className="mt-24 pt-12 border-t">
         <h3 className="text-2xl font-bold mb-8">Related AI Tools for Creators</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -790,6 +790,16 @@ export function ToolPage() {
           ))}
         </div>
       </div>
+
+      {/* SEO Content Section */}
+      {(tool as any).seoContent && (
+        <div className="mt-16 pt-12 border-t">
+          <h2 className="text-3xl font-black mb-6">About {(tool as any).metaTitle ? (tool as any).metaTitle.split('|')[0].trim() : tool.title}</h2>
+          <div className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground text-lg leading-relaxed">
+            <p>{(tool as any).seoContent}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
