@@ -1,64 +1,5 @@
 import { create } from 'zustand';
-import { 
-  onAuthStateChanged, 
-  signInWithPopup, 
-  GoogleAuthProvider, 
-  signOut,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword
-} from 'firebase/auth';
-import { 
-  collection, 
-  doc, 
-  setDoc, 
-  getDoc, 
-  onSnapshot, 
-  query, 
-  orderBy, 
-  addDoc, 
-  deleteDoc,
-  where,
-} from 'firebase/firestore';
-import { auth, db } from './firebase';
-
-export enum OperationType {
-  CREATE = 'create',
-  UPDATE = 'update',
-  DELETE = 'delete',
-  LIST = 'list',
-  GET = 'get',
-  WRITE = 'write',
-}
-
-interface FirestoreErrorInfo {
-  error: string;
-  operationType: OperationType;
-  path: string | null;
-  authInfo: any;
-}
-
-function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
-  const errInfo: FirestoreErrorInfo = {
-    error: error instanceof Error ? error.message : String(error),
-    authInfo: {
-      userId: auth.currentUser?.uid,
-      email: auth.currentUser?.email,
-      emailVerified: auth.currentUser?.emailVerified,
-      isAnonymous: auth.currentUser?.isAnonymous,
-      tenantId: auth.currentUser?.tenantId,
-      providerInfo: auth.currentUser?.providerData.map(provider => ({
-        providerId: provider.providerId,
-        displayName: provider.displayName,
-        email: provider.email,
-        photoUrl: provider.photoURL
-      })) || []
-    },
-    operationType,
-    path
-  }
-  console.error('Firestore Error: ', JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
-}
+import { supabase } from './supabase';
 
 export interface User {
   id: string;
@@ -101,12 +42,12 @@ interface AppState {
   deleteComment: (id: string) => Promise<void>;
   addHistory: (toolId: string, input: string, output: string) => Promise<void>;
   deleteHistory: (id: string) => Promise<void>;
+  loadHistory: (userId: string) => Promise<void>;
+  loadComments: () => Promise<void>;
   initialize: () => void;
   isLoginModalOpen: boolean;
   setIsLoginModalOpen: (isOpen: boolean) => void;
 }
-
-let unsubscribeHistory: (() => void) | null = null;
 
 export const useAppStore = create<AppState>()((set, get) => ({
   user: null,
@@ -117,171 +58,153 @@ export const useAppStore = create<AppState>()((set, get) => ({
   setIsLoginModalOpen: (isOpen) => set({ isLoginModalOpen: isOpen }),
 
   initialize: () => {
-    // Auth Listener
-    onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        const userDocRef = doc(db, 'users', firebaseUser.uid);
-        try {
-          const userDoc = await getDoc(userDocRef);
-          if (userDoc.exists()) {
-            const userData = userDoc.data() as Omit<User, 'id'>;
-            set({ user: { id: firebaseUser.uid, ...userData } });
-          } else {
-            const newUser: User = {
-              id: firebaseUser.uid,
-              name: firebaseUser.displayName || 'Creator',
-              email: firebaseUser.email || '',
-              avatar: firebaseUser.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${firebaseUser.uid}`,
-              role: 'user'
-            };
-            await setDoc(userDocRef, {
-              name: newUser.name,
-              email: newUser.email,
-              avatar: newUser.avatar,
-              role: newUser.role
-            });
-            set({ user: newUser });
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        set({ 
+          user: {
+            id: user.id,
+            name: user.user_metadata?.name || user.email?.split('@')[0] || 'Creator',
+            email: user.email || '',
+            avatar: user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`,
+            role: 'user'
           }
-
-          // Initialize History Listener for this user
-          if (unsubscribeHistory) unsubscribeHistory();
-          const historyQuery = query(
-            collection(db, 'history'), 
-            where('userId', '==', firebaseUser.uid),
-            orderBy('createdAt', 'desc')
-          );
-          unsubscribeHistory = onSnapshot(historyQuery, (snapshot) => {
-            const history = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as HistoryItem));
-            set({ history });
-          }, (error) => {
-            handleFirestoreError(error, OperationType.LIST, 'history');
-          });
-
-        } catch (error) {
-          handleFirestoreError(error, OperationType.GET, `users/${firebaseUser.uid}`);
-        }
-      } else {
-        set({ user: null, history: [] });
-        if (unsubscribeHistory) {
-          unsubscribeHistory();
-          unsubscribeHistory = null;
-        }
+        });
+        get().loadHistory(user.id);
       }
       set({ isAuthReady: true });
     });
 
-    // Comments Listener (Public)
-    const commentsQuery = query(collection(db, 'comments'), orderBy('createdAt', 'desc'));
-    onSnapshot(commentsQuery, (snapshot) => {
-      const comments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Comment));
-      set({ comments });
-    }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, 'comments');
+    supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        set({
+          user: {
+            id: session.user.id,
+            name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'Creator',
+            email: session.user.email || '',
+            avatar: session.user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${session.user.id}`,
+            role: 'user'
+          }
+        });
+        get().loadHistory(session.user.id);
+      } else {
+        set({ user: null, history: [] });
+      }
     });
+
+    get().loadComments();
+  },
+
+  loadHistory: async (userId: string) => {
+    const { data } = await supabase
+      .from('history')
+      .select('*')
+      .eq('userId', userId)
+      .order('createdAt', { ascending: false });
+    if (data) {
+      set({ history: data as HistoryItem[] });
+    }
+  },
+
+  loadComments: async () => {
+    const { data } = await supabase
+      .from('comments')
+      .select('*')
+      .order('createdAt', { ascending: false });
+    if (data) {
+      set({ comments: data as Comment[] });
+    }
   },
 
   login: async () => {
-    const provider = new GoogleAuthProvider();
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error('Login failed:', error);
-      throw error;
-    }
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: window.location.origin,
+      }
+    });
+    if (error) throw error;
   },
 
   loginWithEmail: async (email, pass) => {
-    try {
-      await signInWithEmailAndPassword(auth, email, pass);
-    } catch (error) {
-      console.error('Email login failed:', error);
-      throw error;
-    }
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password: pass,
+    });
+    if (error) throw error;
   },
 
   signUpWithEmail: async (email, pass, name) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
-      const userDocRef = doc(db, 'users', userCredential.user.uid);
-      await setDoc(userDocRef, {
-        name: name || 'Creator',
-        email: email,
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${userCredential.user.uid}`,
-        role: 'user'
-      });
-    } catch (error) {
-      console.error('Email signup failed:', error);
-      throw error;
-    }
+    const { error } = await supabase.auth.signUp({
+      email,
+      password: pass,
+      options: {
+        data: {
+          name,
+        }
+      }
+    });
+    if (error) throw error;
   },
 
   logout: async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      console.error('Logout failed:', error);
-      throw error;
-    }
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
   },
 
   updateProfile: async (name, avatarUrl) => {
     const { user } = get();
     if (!user) return;
-    const userDocRef = doc(db, 'users', user.id);
-    try {
-      await setDoc(userDocRef, { name, avatar: avatarUrl }, { merge: true });
+    const { error } = await supabase.auth.updateUser({
+      data: { name, avatar_url: avatarUrl }
+    });
+    if (!error) {
       set({ user: { ...user, name, avatar: avatarUrl } });
-    } catch (error) {
-      handleFirestoreError(error, OperationType.UPDATE, `users/${user.id}`);
     }
   },
 
   addComment: async (text, rating) => {
-    const { user } = get();
+    const { user, comments } = get();
     if (!user) return;
-    try {
-      await addDoc(collection(db, 'comments'), {
-        userId: user.id,
-        userName: user.name,
-        userAvatar: user.avatar,
-        text,
-        rating,
-        createdAt: Date.now()
-      });
-    } catch (error) {
-      handleFirestoreError(error, OperationType.CREATE, 'comments');
-    }
+    const newComment = {
+      userId: user.id,
+      userName: user.name,
+      userAvatar: user.avatar,
+      text,
+      rating,
+      createdAt: Date.now()
+    };
+    
+    // Optimistic UI
+    set({ comments: [newComment as Comment, ...comments] });
+
+    await supabase.from('comments').insert(newComment);
   },
 
   deleteComment: async (id) => {
-    try {
-      await deleteDoc(doc(db, 'comments', id));
-    } catch (error) {
-      handleFirestoreError(error, OperationType.DELETE, `comments/${id}`);
-    }
+    const { comments } = get();
+    set({ comments: comments.filter(c => c.id !== id) });
+    await supabase.from('comments').delete().eq('id', id);
   },
 
   addHistory: async (toolId, input, output) => {
-    const { user } = get();
+    const { user, history } = get();
     if (!user) return;
-    try {
-      await addDoc(collection(db, 'history'), {
-        userId: user.id,
-        toolId,
-        input,
-        output,
-        createdAt: Date.now()
-      });
-    } catch (error) {
-      handleFirestoreError(error, OperationType.CREATE, 'history');
-    }
+    const newItem = {
+      userId: user.id,
+      toolId,
+      input,
+      output,
+      createdAt: Date.now()
+    };
+
+    set({ history: [newItem as HistoryItem, ...history] });
+
+    await supabase.from('history').insert(newItem);
   },
 
   deleteHistory: async (id) => {
-    try {
-      await deleteDoc(doc(db, 'history', id));
-    } catch (error) {
-      handleFirestoreError(error, OperationType.DELETE, `history/${id}`);
-    }
+    const { history } = get();
+    set({ history: history.filter(h => h.id !== id) });
+    await supabase.from('history').delete().eq('id', id);
   }
 }));
