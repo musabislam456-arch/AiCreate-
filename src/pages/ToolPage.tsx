@@ -20,6 +20,7 @@ import { MicButton } from '../components/MicButton';
 import { ModelSelector } from '../components/ModelSelector';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import AdsterraBanner from '../components/AdsterraBanner';
 
 const LANGUAGES = [
   "English", "Spanish", "French", "German", "Hindi", 
@@ -699,8 +700,11 @@ export function ToolPage() {
         </div>
       </div>
 
+      {/* Adsterra Advertisement block */}
+      <AdsterraBanner />
+
       {/* Community Section */}
-      <div className="max-w-4xl mx-auto pt-12 border-t">
+      <div className="max-w-4xl mx-auto pt-4 border-t">
         <div className="flex items-center justify-between mb-10">
           <div className="flex items-center space-x-3">
             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
