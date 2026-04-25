@@ -22,6 +22,7 @@ export interface Comment {
 export interface HistoryItem {
   id: string;
   userId: string;
+  userName?: string;
   toolId: string;
   input: string;
   output: string;
@@ -45,8 +46,6 @@ interface AppState {
   loadHistory: (userId: string) => Promise<void>;
   loadComments: () => Promise<void>;
   initialize: () => void;
-  isLoginModalOpen: boolean;
-  setIsLoginModalOpen: (isOpen: boolean) => void;
 }
 
 export const useAppStore = create<AppState>()((set, get) => ({
@@ -54,12 +53,17 @@ export const useAppStore = create<AppState>()((set, get) => ({
   comments: [],
   history: [],
   isAuthReady: false,
-  isLoginModalOpen: false,
-  setIsLoginModalOpen: (isOpen) => set({ isLoginModalOpen: isOpen }),
 
-  initialize: () => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) {
+  initialize: async () => {
+    try {
+      // Check current session
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      // Automatically log in anonymously if there's no session
+      if (!session) {
+        await supabase.auth.signInAnonymously();
+      } else {
+        const user = session.user;
         set({ 
           user: {
             id: user.id,
@@ -71,47 +75,72 @@ export const useAppStore = create<AppState>()((set, get) => ({
         });
         get().loadHistory(user.id);
       }
-      set({ isAuthReady: true });
-    });
+    } catch (error) {
+      console.warn("Supabase auth integration error (Expected if keys aren't configured):", error);
+    }
+    
+    set({ isAuthReady: true });
 
-    supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        set({
-          user: {
-            id: session.user.id,
-            name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'Creator',
-            email: session.user.email || '',
-            avatar: session.user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${session.user.id}`,
-            role: 'user'
+    try {
+      supabase.auth.onAuthStateChange(async (_event, session) => {
+        if (session?.user) {
+          set({
+            user: {
+              id: session.user.id,
+              name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'Creator',
+              email: session.user.email || '',
+              avatar: session.user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${session.user.id}`,
+              role: 'user'
+            }
+          });
+          get().loadHistory(session.user.id);
+        } else {
+          set({ user: null, history: [] });
+          // If they ever get logged out by any means, log them back in anonymously automatically
+          try {
+            await supabase.auth.signInAnonymously();
+          } catch (e) {
+            // Ignore
           }
-        });
-        get().loadHistory(session.user.id);
-      } else {
-        set({ user: null, history: [] });
-      }
-    });
+        }
+      });
+    } catch (error) {
+      console.warn("Supabase auth listener error:", error);
+    }
 
-    get().loadComments();
+    try {
+      await get().loadComments();
+    } catch (error) {
+      console.warn("Supabase load comments error:", error);
+    }
   },
 
   loadHistory: async (userId: string) => {
-    const { data } = await supabase
-      .from('history')
-      .select('*')
-      .eq('userId', userId)
-      .order('createdAt', { ascending: false });
-    if (data) {
-      set({ history: data as HistoryItem[] });
+    try {
+      const { data } = await supabase
+        .from('history')
+        .select('*')
+        .eq('userId', userId)
+        .order('createdAt', { ascending: false });
+      if (data) {
+        set({ history: data as HistoryItem[] });
+      }
+    } catch (error) {
+      console.warn("Failed to load history:", error);
     }
   },
 
   loadComments: async () => {
-    const { data } = await supabase
-      .from('comments')
-      .select('*')
-      .order('createdAt', { ascending: false });
-    if (data) {
-      set({ comments: data as Comment[] });
+    try {
+      const { data } = await supabase
+        .from('comments')
+        .select('*')
+        .order('createdAt', { ascending: false });
+      if (data) {
+        set({ comments: data as Comment[] });
+      }
+    } catch (error) {
+      console.warn("Failed to load comments:", error);
     }
   },
 
@@ -191,6 +220,7 @@ export const useAppStore = create<AppState>()((set, get) => ({
     if (!user) return;
     const newItem = {
       userId: user.id,
+      userName: user.name,
       toolId,
       input,
       output,

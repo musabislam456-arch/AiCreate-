@@ -25,20 +25,18 @@ export function Home() {
 
   const handleAddReview = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) {
-      toast.error('Please sign in to leave a review');
-      useAppStore.getState().setIsLoginModalOpen(true);
-      return;
-    }
     if (newComment.length < 5) {
       toast.error('Comment must be at least 5 characters');
       return;
     }
-    addComment(newComment, newRating);
-    setNewComment('');
-    setNewRating(5);
-    setIsReviewModalOpen(false);
-    toast.success('Review added successfully!');
+    // They are automatically logged in now.
+    if (user) {
+      addComment(newComment, newRating);
+      setNewComment('');
+      setNewRating(5);
+      setIsReviewModalOpen(false);
+      toast.success('Review added successfully!');
+    }
   };
 
   const scrollToSection = (id: string) => {

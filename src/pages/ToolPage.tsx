@@ -21,6 +21,7 @@ import { ModelSelector } from '../components/ModelSelector';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import AdsterraBanner from '../components/AdsterraBanner';
+import AdsterraBanner from '../components/AdsterraBanner';
 
 const LANGUAGES = [
   "English", "Spanish", "French", "German", "Hindi", 
@@ -719,38 +720,29 @@ export function ToolPage() {
           )}
         </div>
 
-        {user ? (
-          <Card className="mb-12 border-none shadow-lg bg-primary/5">
-            <CardContent className="pt-6">
-              <form onSubmit={handleAddComment} className="flex gap-6">
-                <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
-                  <AvatarImage src={user.avatar} />
-                  <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1 space-y-3">
-                  <Textarea 
-                    placeholder="How was your experience with this tool?" 
-                    value={commentText}
-                    onChange={(e) => setCommentText(e.target.value)}
-                    className="min-h-[100px] rounded-xl border-none shadow-inner bg-background/50 focus-visible:ring-primary"
-                  />
-                  <div className="flex justify-end">
-                    <Button type="submit" size="lg" className="rounded-full px-8 font-bold" disabled={!commentText.trim()}>
-                      Post Review
-                    </Button>
-                  </div>
+        <Card className="mb-12 border-none shadow-lg bg-primary/5">
+          <CardContent className="pt-6">
+            <form onSubmit={handleAddComment} className="flex gap-6">
+              <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
+                <AvatarImage src={user?.avatar} />
+                <AvatarFallback>{user?.name?.charAt(0) || 'C'}</AvatarFallback>
+              </Avatar>
+              <div className="flex-1 space-y-3">
+                <Textarea 
+                  placeholder="How was your experience with this tool?" 
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                  className="min-h-[100px] rounded-xl border-none shadow-inner bg-background/50 focus-visible:ring-primary"
+                />
+                <div className="flex justify-end">
+                  <Button type="submit" size="lg" className="rounded-full px-8 font-bold" disabled={!commentText.trim()}>
+                    Post Review
+                  </Button>
                 </div>
-              </form>
-            </CardContent>
-          </Card>
-        ) : (
-          <Card className="mb-12 bg-muted/30 border-dashed border-2">
-            <CardContent className="py-10 text-center">
-              <p className="text-muted-foreground text-lg mb-4">Sign in to share your thoughts with the community.</p>
-              <Button onClick={() => useAppStore.getState().setIsLoginModalOpen(true)} variant="outline" className="rounded-full px-8">Sign In Now</Button>
-            </CardContent>
-          </Card>
-        )}
+              </div>
+            </form>
+          </CardContent>
+        </Card>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {comments.map((comment) => (
