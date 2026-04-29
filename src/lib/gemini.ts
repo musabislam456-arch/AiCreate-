@@ -254,21 +254,82 @@ function parseJSONResponse(text: string) {
   }
 }
 
-export async function analyzeChannel(statsOrUrl: string, language: string = 'English', model: AIModel = 'Nemotron') {
+async function fetchYoutubeDataWithKey(url: string, key: string, type: 'Channel' | 'Video') {
+  try {
+    let endpoint = '';
+    
+    if (type === 'Video') {
+      const videoIdMatch = url.match(/(?:v=|youtu\.be\/|youtube\.com\/shorts\/)([\w-]+)/);
+      if (videoIdMatch && videoIdMatch[1]) {
+        endpoint = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${videoIdMatch[1]}&key=${key}`;
+      } else {
+        return '';
+      }
+    } else {
+      // Channel
+      let idParam = '';
+      if (url.includes('/channel/')) {
+        const id = url.split('/channel/')[1].split('/')[0];
+        idParam = `id=${id}`;
+      } else if (url.includes('/c/') || url.includes('/user/') || url.includes('@')) {
+        let handle = url.split('/').pop()?.split('?')[0];
+        if (handle?.startsWith('@')) {
+           // use search to get channel id
+           const searchRes = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${handle}&key=${key}`).then(res => res.json());
+           if (searchRes.items && searchRes.items.length > 0) {
+             idParam = `id=${searchRes.items[0].id.channelId}`;
+           }
+        } else {
+           idParam = `forUsername=${handle}`;
+        }
+      }
+      if (!idParam) return '';
+      endpoint = `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&${idParam}&key=${key}`;
+    }
+
+    if (!endpoint) return '';
+    const res = await fetch(endpoint).then(res => res.json());
+    return JSON.stringify(res.items?.[0] || {});
+  } catch (error) {
+    console.warn("Youtube API Fetch Error:", error);
+    return '';
+  }
+}
+
+export async function analyzeChannel(
+  statsOrUrl: string, 
+  language: string = 'English', 
+  model: AIModel = 'Nemotron',
+  analyzerType: 'Channel' | 'Video' = 'Channel',
+  analyticsDuration: string = '1 Year'
+) {
   try {
     const isUrl = statsOrUrl.startsWith('http');
-    const prompt = `Act as an expert YouTube data analyst. Analyze the following channel ${isUrl ? 'URL' : 'statistics/context'}.
+    
+    // Check if we can use Youtube API
+    let youtubeApiData = '';
+    const youtubeKey = process.env.VITE_YOUTUBE_API_KEY || (import.meta as any).env?.VITE_YOUTUBE_API_KEY;
+    if (youtubeKey && isUrl) {
+      try {
+        youtubeApiData = await fetchYoutubeDataWithKey(statsOrUrl, youtubeKey, analyzerType);
+      } catch (e) {
+        console.warn('YouTube API fetch failed:', e);
+      }
+    }
+
+    const typePrefix = analyzerType === 'Video' ? 'video' : 'channel';
+    const prompt = `Act as an expert YouTube data analyst. Analyze the following ${typePrefix} ${isUrl ? 'URL' : 'statistics/context'} across a duration of ${analyticsDuration}.
     
     CRITICAL INSTRUCTIONS FOR ACCURACY:
-    1. Search for the EXACT, CURRENT statistics for this channel using web search.
-    2. Look for subscriber count, total video views, and recent upload performance.
+    1. Look for the EXACT, CURRENT statistics for this ${typePrefix}. If YouTube API data is provided below, prioritize it over web search. Use web search to fill in missing details.
+    2. Analyze performance spanning the requested duration of ${analyticsDuration}. Structure historical data accordingly in the JSON.
     3. Provide a detailed, actionable growth plan based on their actual content style and niche.
-    4. Return the response in JSON format.
+    4. Return the response in JSON format exactly matching the structure below.
     
     Format:
     {
-      "channelName": "string",
-      "totalSubscribers": "string",
+      "channelName": "string (Channel name OR Video title)",
+      "totalSubscribers": "string (Or video likes/engagement)",
       "totalViews": "string",
       "totalVideos": "string",
       "mostViewedVideo": { "title": "string", "url": "string" },
@@ -282,12 +343,13 @@ export async function analyzeChannel(statsOrUrl: string, language: string = 'Eng
         { "name": "string", "url": "string" }
       ],
       "historicalData": [
-        { "month": "string", "subscribers": number, "views": number }
+        { "month": "string (Formatted based on duration)", "subscribers": number, "views": number }
       ]
     }
 
     Language: ${language}
-    Channel Info: ${statsOrUrl}`;
+    Input Context: ${statsOrUrl}
+    ${youtubeApiData ? 'Real YouTube API Data: ' + youtubeApiData : ''}`;
 
     // For Channel Analysis, we prefer models with search capabilities
     const preferredModel = model === 'Auto' ? 'Nemotron' : model;

@@ -82,6 +82,10 @@ export function AdvancedToolPage() {
   const [customLengthUnit, setCustomLengthUnit] = useState('Minutes');
   const [scriptFormat, setScriptFormat] = useState<'Full' | 'Paragraph'>('Full');
 
+  // Channel Analyzer state
+  const [analyzerType, setAnalyzerType] = useState<'Channel' | 'Video'>('Channel');
+  const [analyticsDuration, setAnalyticsDuration] = useState('1 Year');
+
   // Sequential generation state
   const [generationMode, setGenerationMode] = useState<'Full' | 'Parts'>('Full');
   const [numParts, setNumParts] = useState('3');
@@ -222,7 +226,7 @@ export function AdvancedToolPage() {
       if (tool.id === 'thumbnail-ab-testing') {
         result = await analyzeThumbnails(images, input, selectedAIModel);
       } else if (tool.id === 'channel-analyzer') {
-        result = await analyzeChannel(input, language, selectedAIModel);
+        result = await analyzeChannel(input, language, selectedAIModel, analyzerType, analyticsDuration);
       } else if (tool.id === 'metadata-generator') {
         result = await generateMetadata(input, language, selectedAIModel);
       } else if (tool.id === 'competitor-analysis') {
@@ -429,7 +433,7 @@ export function AdvancedToolPage() {
               <div className="p-3 bg-blue-500/10 rounded-full mb-3">
                 <Users className="h-6 w-6 text-blue-500" />
               </div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">Subscribers</p>
+              <p className="text-sm font-medium text-muted-foreground mb-1">{analyzerType === 'Video' ? 'Likes / Engagement' : 'Subscribers'}</p>
               <p className="font-bold text-2xl tracking-tight">{output.totalSubscribers}</p>
             </CardContent>
           </Card>
@@ -438,7 +442,7 @@ export function AdvancedToolPage() {
               <div className="p-3 bg-green-500/10 rounded-full mb-3">
                 <Eye className="h-6 w-6 text-green-500" />
               </div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">Total Views</p>
+              <p className="text-sm font-medium text-muted-foreground mb-1">{analyzerType === 'Video' ? 'Views' : 'Total Views'}</p>
               <p className="font-bold text-2xl tracking-tight">{output.totalViews}</p>
             </CardContent>
           </Card>
@@ -447,7 +451,7 @@ export function AdvancedToolPage() {
               <div className="p-3 bg-purple-500/10 rounded-full mb-3">
                 <Video className="h-6 w-6 text-purple-500" />
               </div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">Total Videos</p>
+              <p className="text-sm font-medium text-muted-foreground mb-1">{analyzerType === 'Video' ? 'Comments / Shares' : 'Total Videos'}</p>
               <p className="font-bold text-2xl tracking-tight">{output.totalVideos}</p>
             </CardContent>
           </Card>
@@ -478,7 +482,7 @@ export function AdvancedToolPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-muted/30 rounded-lg p-4 border">
-            <h3 className="font-semibold text-lg mb-4">Growth Trend (Subscribers & Views)</h3>
+            <h3 className="font-semibold text-lg mb-4">Growth Trend ({analyzerType === 'Video' ? 'Likes & Views' : 'Subscribers & Views'})</h3>
             <div className="h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={output.historicalData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
@@ -488,7 +492,7 @@ export function AdvancedToolPage() {
                   <YAxis yAxisId="right" orientation="right" tickFormatter={(value) => new Intl.NumberFormat('en-US', { notation: "compact", compactDisplay: "short" }).format(value)} />
                   <Tooltip formatter={(value: number) => new Intl.NumberFormat('en-US').format(value)} />
                   <Legend />
-                  <Line yAxisId="left" type="monotone" dataKey="subscribers" stroke="#3b82f6" strokeWidth={3} name="Subscribers" dot={{ r: 4 }} activeDot={{ r: 8 }} />
+                  <Line yAxisId="left" type="monotone" dataKey="subscribers" stroke="#3b82f6" strokeWidth={3} name={analyzerType === 'Video' ? 'Likes' : 'Subscribers'} dot={{ r: 4 }} activeDot={{ r: 8 }} />
                   <Line yAxisId="right" type="monotone" dataKey="views" stroke="#22c55e" strokeWidth={3} name="Views" dot={{ r: 4 }} activeDot={{ r: 8 }} />
                 </LineChart>
               </ResponsiveContainer>
@@ -607,6 +611,37 @@ export function AdvancedToolPage() {
                       </SelectContent>
                     </Select>
                   </div>
+                )}
+                {tool.id === 'channel-analyzer' && (
+                  <>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-bold">Analyzer Type</Label>
+                      <Select value={analyzerType} onValueChange={(v: 'Channel' | 'Video') => setAnalyzerType(v)}>
+                        <SelectTrigger className="rounded-xl">
+                          <SelectValue placeholder="Select Type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Channel">Channel Analyzer</SelectItem>
+                          <SelectItem value="Video">Video Analyzer</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-bold">Analytics Duration</Label>
+                      <Select value={analyticsDuration} onValueChange={setAnalyticsDuration}>
+                        <SelectTrigger className="rounded-xl">
+                          <SelectValue placeholder="Select Duration" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="3 Years">3 Years (Like YouTube Studio)</SelectItem>
+                          <SelectItem value="2 Years">2 Years</SelectItem>
+                          <SelectItem value="1 Year">1 Year</SelectItem>
+                          <SelectItem value="6 Months">6 Months</SelectItem>
+                          <SelectItem value="Custom">Custom Range</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </>
                 )}
               </div>
 
@@ -777,7 +812,7 @@ export function AdvancedToolPage() {
                 <div className="space-y-2">
                   <Label className="text-sm font-bold">
                     {tool.id === 'thumbnail-ab-testing' ? 'Video Context / Title' : 
-                     tool.id === 'channel-analyzer' ? 'Channel URL or Stats' :
+                     tool.id === 'channel-analyzer' ? `${analyzerType} URL or Stats` :
                      tool.id === 'competitor-analysis' ? 'Competitor Channel URL or Niche' :
                      tool.id === 'script-to-visuals' ? 'Paste your Script' :
                      tool.id === 'advanced-script-writer' ? 'Video Topic / Details' :
