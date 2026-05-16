@@ -49,23 +49,55 @@ export function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       <Helmet>
-        <title>CreatorAI – Best Free AI Tools for YouTubers & Content Creators</title>
-        <meta name="description" content="Supercharge your YouTube channel with CreatorAI's free AI tools for creators. Get AI script generators, thumbnail makers, viral hook generators, and SEO title optimization all in one place." />
-        <meta name="keywords" content="free AI tools for YouTubers, AI script generator, YouTube title generator AI free, AI thumbnail generator, YouTube SEO tools, best AI tools for creators 2026" />
+        <title>CreatorAI Musab – AI Tools for Creators & Content Generation</title>
+        <meta name="description" content="CreatorAI Musab is a modern AI creator platform offering AI-powered tools for YouTubers, TikTok creators, influencers, and digital creators to generate scripts, prompts, captions, thumbnails, and viral content ideas." />
+        <meta name="keywords" content="AI tools for creators, AI content generator, AI creator platform, AI tools for YouTubers, AI tools for TikTok creators, AI prompt generator, AI social media tools, AI creator assistant, AI video tools, AI content tools" />
+        <meta property="og:title" content="CreatorAI Musab – AI Tools for Creators & Content Generation" />
+        <meta property="og:description" content="CreatorAI Musab is a modern AI creator platform offering AI-powered tools for YouTubers, TikTok creators, influencers, and digital creators to generate scripts, prompts, captions, thumbnails, and viral content ideas." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://ai-create-pi.vercel.app" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="CreatorAI Musab – AI Tools for Creators & Content Generation" />
+        <meta name="twitter:description" content="CreatorAI Musab is a modern AI creator platform offering AI-powered tools for YouTubers, TikTok creators, influencers, and digital creators to generate scripts, prompts, captions, thumbnails, and viral content ideas." />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "Organization",
+                "name": "CreatorAI Musab",
+                "url": "https://ai-create-pi.vercel.app",
+                "logo": "https://ai-create-pi.vercel.app/favicon.svg"
+              },
+              {
+                "@type": "WebSite",
+                "name": "CreatorAI Musab",
+                "url": "https://ai-create-pi.vercel.app",
+                "description": "AI Tools for Creators & Content Generation"
+              },
+              {
+                "@type": "SoftwareApplication",
+                "name": "CreatorAI Musab Platform",
+                "applicationCategory": "BusinessApplication",
+                "operatingSystem": "All"
+              }
+            ]
+          })}
+        </script>
       </Helmet>
 
       {/* Hero Section */}
       <section className="relative py-24 md:py-40 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(255,0,0,0.1),rgba(255,255,255,0))] pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(14,165,233,0.1),rgba(255,255,255,0))] pointer-events-none" />
         <div className="container mx-auto px-4 text-center relative z-10">
           <Badge variant="secondary" className="mb-8 px-6 py-2 text-sm rounded-full bg-primary/10 text-primary border-primary/20 animate-bounce">
-            🚀 100% Free AI Tools for Creators
+            🚀 The Ultimate Enterprise AI Toolkit
           </Badge>
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-8 max-w-5xl mx-auto text-balance leading-[0.9]">
-            SUPERCHARGE YOUR CONTENT WITH <span className="text-primary">CreatorAI</span>
+            Create Viral Content Faster <span className="text-primary">with AI</span>
           </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-2xl mx-auto text-balance">
-            The ultimate platform for <span className="text-foreground font-semibold">free AI tools for YouTubers</span>. Write scripts, generate viral hooks, and analyze metrics faster than ever with the <span className="text-foreground font-semibold">best AI tools for creators 2026</span>.
+          <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto text-balance">
+            CreatorAI Musab helps creators generate AI-powered scripts, prompts, captions, thumbnails, branding ideas, and viral content tools for YouTube, TikTok, Instagram, and social media.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-6">
             <Button 
@@ -73,7 +105,7 @@ export function Home() {
               className="rounded-full px-10 h-14 text-lg font-bold shadow-xl shadow-primary/20 hover:scale-105 transition-transform"
               onClick={() => scrollToSection('core-tools')}
             >
-              Explore Free AI Tools
+              Start Creating
             </Button>
             <Button 
               size="lg" 
@@ -81,7 +113,7 @@ export function Home() {
               className="rounded-full px-10 h-14 text-lg font-bold hover:bg-primary/5 hover:scale-105 transition-transform"
               onClick={() => scrollToSection('advanced-tools')}
             >
-              Advanced YouTube SEO
+              Explore AI Tools
             </Button>
           </div>
         </div>
@@ -181,60 +213,59 @@ export function Home() {
       {/* SEO Content Section */}
       <section className="py-24 container mx-auto px-4 border-t">
         <div className="max-w-4xl mx-auto prose prose-lg dark:prose-invert">
-          <h2 className="text-3xl font-black mb-8">The Best Free AI Tools for YouTubers and Content Creators</h2>
+          <h2 className="text-3xl font-black mb-8">The Ultimate AI Creator Platform for YouTubers, TikTokers, and Influencers</h2>
           
           <p>
-            In the rapidly evolving digital landscape, staying ahead of the curve is essential for any content creator. 
-            <strong>CreatorAI</strong> is designed to be your ultimate partner, providing a comprehensive suite of 
-            <strong>free AI tools for YouTubers</strong> that streamline your workflow and boost your channel's visibility. 
-            Whether you're a seasoned pro or just starting out, our <strong>ai tools website free</strong> offers everything 
-            you need to succeed in 2026.
+            In the rapidly evolving digital landscape, staying ahead of the algorithm is essential for any content creator. 
+            <strong>CreatorAI Musab</strong> is designed to be your ultimate <strong>AI creator platform</strong>, providing a comprehensive suite of 
+            <strong>AI tools for creators</strong> that streamline your creative workflow and boost your channel's visibility. 
+            Whether you're looking for an <strong>AI content generator</strong>, a powerful <strong>AI script writer</strong>, or an <strong>AI prompt generator</strong>, our platform offers everything you need to go viral in 2026.
           </p>
 
           <h3 className="text-2xl font-bold mt-12 mb-4">Why Use AI Tools for Content Creation?</h3>
           <p>
-            Using <strong>AI tools for creators</strong> isn't just about saving time; it's about optimizing for the algorithm. 
-            Our platform leverages advanced machine learning to help you understand what works. From 
-            <strong>youtube title generator ai free</strong> options that increase click-through rates to 
-            <strong>ai script generator for youtube</strong> tools that keep viewers engaged, we provide the 
-            <strong>best ai tools for creators 2026</strong>.
+            Using an <strong>AI creator assistant</strong> isn't just about saving time; it's about optimizing for maximum engagement. 
+            Our platform leverages advanced language models to create highly optimized assets. From 
+            <strong> AI tools for TikTok creators</strong> that generate trending captions to 
+            <strong> AI tools for YouTubers</strong> that craft the perfect hook and thumbnail ideas, we provide the 
+            <strong> best AI tools for creators</strong>.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-12">
             <div>
               <h4 className="text-xl font-bold mb-4 flex items-center">
-                <Search className="w-5 h-5 mr-2 text-primary" /> YouTube Title Generator
+                <Search className="w-5 h-5 mr-2 text-primary" /> AI Script & Prompt Generator
               </h4>
               <p className="text-base text-muted-foreground">
-                Stop guessing what titles will work. Our SEO-optimized title generator analyzes trending keywords 
-                to give you high-CTR titles that rank on Google and YouTube search.
+                Stop staring at a blank page. Generate high-retention scripts, viral hooks, and specific 
+                <strong> AI prompts</strong> to elevate your social media strategy effortlessly.
               </p>
             </div>
             <div>
               <h4 className="text-xl font-bold mb-4 flex items-center">
-                <FileText className="w-5 h-5 mr-2 text-primary" /> AI Script Generator
+                <FileText className="w-5 h-5 mr-2 text-primary" /> Multi-Platform Content
               </h4>
               <p className="text-base text-muted-foreground">
-                Generate full video scripts in seconds. Our AI understands pacing, hooks, and calls to action, 
-                ensuring your content is perfectly structured for maximum retention.
+                Easily adapt your ideas into native formats for YouTube, Instagram Reels, and TikTok. 
+                Our <strong>AI social media tools</strong> understand the nuanced pacing and length constraints of each platform.
               </p>
             </div>
             <div>
               <h4 className="text-xl font-bold mb-4 flex items-center">
-                <ImagePlus className="w-5 h-5 mr-2 text-primary" /> Free AI Thumbnail Generator
+                <ImagePlus className="w-5 h-5 mr-2 text-primary" /> Strategic Visual Branding
               </h4>
               <p className="text-base text-muted-foreground">
-                Visuals are everything. Create stunning, high-quality thumbnails that stand out in the feed 
-                using our state-of-the-art AI image generation tools.
+                Visuals drive clicks. Brainstorm <strong>AI thumbnail ideas</strong> and generate coherent branding 
+                materials that differentiate your channel from competitors in crowded niches.
               </p>
             </div>
             <div>
               <h4 className="text-xl font-bold mb-4 flex items-center">
-                <BarChart3 className="w-5 h-5 mr-2 text-primary" /> Channel Analysis
+                <BarChart3 className="w-5 h-5 mr-2 text-primary" /> Intelligent Creator Automation
               </h4>
               <p className="text-base text-muted-foreground">
-                Get deep insights into your channel's performance. Our AI analysis tools provide actionable 
-                suggestions to improve your content strategy and reach more viewers.
+                Automate competitive analysis and scale your content output using our deep <strong>AI creator automation</strong> features, 
+                designed to uncover content gaps and strategic opportunities.
               </p>
             </div>
           </div>

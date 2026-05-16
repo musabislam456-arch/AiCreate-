@@ -83,11 +83,19 @@ async function callExternalAI(prompt: string, config: { provider: string, model:
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error?.message || `API error: ${response.status}`);
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch (e) {
+        throw new Error(`API error: ${response.status}`);
+      }
+      throw new Error(typeof errorData.error === 'string' ? errorData.error : errorData.error?.message || JSON.stringify(errorData) || `API error: ${response.status}`);
     }
 
     const data = await response.json();
+    if (!data || !data.choices || !data.choices[0]) {
+      throw new Error(data?.error?.message || JSON.stringify(data) || 'Invalid response from AI provider');
+    }
     const message = data.choices[0].message;
     
     let result = message.content || '';
@@ -320,11 +328,11 @@ export async function analyzeChannel(
     const typePrefix = analyzerType === 'Video' ? 'video' : 'channel';
     const prompt = `Act as an expert YouTube data analyst. Analyze the following ${typePrefix} ${isUrl ? 'URL' : 'statistics/context'} across a duration of ${analyticsDuration}.
     
-    CRITICAL INSTRUCTIONS FOR ACCURACY:
-    1. Look for the EXACT, CURRENT statistics for this ${typePrefix}. If YouTube API data is provided below, prioritize it over web search. Use web search to fill in missing details.
-    2. Analyze performance spanning the requested duration of ${analyticsDuration}. Structure historical data accordingly in the JSON.
+    CRITICAL INSTRUCTIONS FOR SPEED AND ACCURACY:
+    1. If real YouTube API data is provided below, USE IT purely. DO NOT perform extensive redundant web searches.
+    2. For historical data over the ${analyticsDuration}, DO NOT perform multiple web searches for month-by-month data. Instead, realistically estimate or extrapolate the historical growth curve based on the current stats to respond IMMEDIATELY. Limit historical data points to a maximum of 6 representative points spanning the duration (e.g. 6 evenly spaced markers).
     3. Provide a detailed, actionable growth plan based on their actual content style and niche.
-    4. Return the response in JSON format exactly matching the structure below.
+    4. Return the response in JSON format exactly matching the structure below. NO markdown, NO conversational text.
     
     Format:
     {
@@ -355,24 +363,29 @@ export async function analyzeChannel(
     const preferredModel = model === 'Auto' ? 'Nemotron' : model;
     
     try {
-      const resText = await generateAIResponse(prompt + "\nIMPORTANT: Return ONLY valid JSON. Use web search to find real data.", preferredModel, true);
+      const resText = await generateAIResponse(prompt + "\nIMPORTANT: Return ONLY valid JSON.", preferredModel, false);
       return parseJSONResponse(resText);
     } catch (e) {
       // Fallback to Gemini if search fails or other error
-    if (apiKey && ai) {
-        const response = await ai.models.generateContent({
-          model: 'models/gemini-2.0-flash',
-          contents: [{ role: 'user', parts: [{ text: prompt }] }],
-          // @ts-ignore
-          tools: isUrl ? [{ googleSearch: {} }] : undefined,
-        });
-        return parseJSONResponse(response.text || '{}');
+      if (apiKey && ai) {
+        try {
+          const response = await ai.models.generateContent({
+            model: 'models/gemini-2.0-flash',
+            contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          });
+          return parseJSONResponse(response.text || '{}');
+        } catch (geminiError: any) {
+          throw formatGeminiError(geminiError, 'Failed to analyze channel');
+        }
       }
-      throw e;
+      throw formatGeminiError(e, 'Failed to analyze channel');
     }
   } catch (error: any) {
     console.error('Error analyzing channel:', error);
-    throw error;
+    if ((error as Error).message.includes('Failed to analyze channel')) {
+      throw error;
+    }
+    throw formatGeminiError(error, 'Failed to analyze channel');
   }
 }
 
