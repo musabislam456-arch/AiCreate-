@@ -37,7 +37,51 @@ export const BLOG_POSTS = [
     readTime: '8 min read',
     category: 'Automation',
     image: 'https://images.unsplash.com/photo-1533750516457-a7f992034fec?q=80&w=2000&auto=format&fit=crop'
-  }
+  },
+  {
+    id: 'how-to-grow-youtube-channel-with-ai',
+    slug: 'how-to-grow-youtube-channel-with-ai',
+    title: 'How to Grow a YouTube Channel Fast with AI Tools',
+    description: 'A complete step-by-step masterclass on implementing a full AI creator workflow from ideation to AEO tracking.',
+    date: '2026-05-18',
+    author: 'Growth Specialist',
+    readTime: '15 min read',
+    category: 'Strategy',
+    image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2000&auto=format&fit=crop'
+  },
+  {
+    id: 'top-ai-video-editing-tools',
+    slug: 'top-ai-video-editing-tools',
+    title: 'Top AI Video Editing Tools for Content Creators',
+    description: 'Learn which AI video editors speed up production without sacrificing visual quality or retention rates.',
+    date: '2026-05-18',
+    author: 'Video Optimization Specialist',
+    readTime: '7 min read',
+    category: 'Video Editing',
+    image: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?q=80&w=2000&auto=format&fit=crop'
+  },
+  {
+    id: 'ai-tools-for-students',
+    slug: 'ai-tools-for-students',
+    title: '5 Life-Saving AI Tools for Students and Creators',
+    description: 'Whether you are editing your first video project or studying visual arts, these free AI tools are essential.',
+    date: '2026-05-17',
+    author: 'Education Lead',
+    readTime: '5 min read',
+    category: 'Productivity',
+    image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2000&auto=format&fit=crop'
+  },
+  {
+    id: 'free-ai-thumbnail-generators',
+    slug: 'free-ai-thumbnail-generators',
+    title: 'The Best Free AI Thumbnail Generators Ranked',
+    description: 'We test out the leading AI image models to see which one creates the highest CTR thumbnail designs.',
+    date: '2026-05-16',
+    author: 'SEO Content Editor',
+    readTime: '9 min read',
+    category: 'Design',
+    image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=2000&auto=format&fit=crop'
+  },
 ];
 
 export function BlogList() {
