@@ -26,7 +26,7 @@ createRoot(document.getElementById('root')!).render(
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
-              <Route path="tool/:id" element={<ToolPage />} />
+              <Route path="tools/:id" element={<ToolPage />} />
               <Route path="advanced/:id" element={<AdvancedToolPage />} />
               <Route path="history" element={<HistoryPage />} />
               <Route path="profile" element={<ProfilePage />} />

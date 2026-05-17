@@ -8,7 +8,13 @@ export function Footer() {
         <p className="text-sm text-muted-foreground max-w-md">
           Made by Musab
           <br />
-          If anything is not working or gives error, contact: Ketnot786@gmail.com
+          If anything is not working or gives error, contact:{" "}
+          <a
+            href="mailto:support@creatorai.com"
+            className="hover:text-primary transition-colors"
+          >
+            support@creatorai.com
+          </a>
         </p>
         <p className="text-xs text-muted-foreground mt-8">
           &copy; {new Date().getFullYear()} CreatorAI. All rights reserved.

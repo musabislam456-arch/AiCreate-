@@ -778,7 +778,7 @@ export function ToolPage() {
         <h3 className="text-2xl font-bold mb-8">Related AI Tools for Creators</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           {CORE_TOOLS.filter(t => t.id !== tool.id).slice(0, 4).map(relatedTool => (
-            <Link key={relatedTool.id} to={`/tool/${relatedTool.id}`} className="p-4 bg-muted rounded-xl hover:bg-primary/5 hover:border-primary border transition-all">
+            <Link key={relatedTool.id} to={`/tools/${relatedTool.id}`} className="p-4 bg-muted rounded-xl hover:bg-primary/5 hover:border-primary border transition-all">
               <h4 className="font-bold text-sm mb-1">{relatedTool.title}</h4>
               <p className="text-xs text-muted-foreground line-clamp-1">{relatedTool.description}</p>
             </Link>

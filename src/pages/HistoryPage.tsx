@@ -53,7 +53,7 @@ export function HistoryPage() {
                       </p>
                     </div>
                     {tool && (
-                      <Link to={`/tool/${tool.id}`} className={buttonVariants({ variant: "ghost", size: "sm" })}>
+                      <Link to={`/tools/${tool.id}`} className={buttonVariants({ variant: "ghost", size: "sm" })}>
                         Use Tool <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
                     )}

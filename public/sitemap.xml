@@ -85,6 +85,42 @@
     <priority>0.1</priority>
   </url>
   <url>
+    <loc>https://ai-create-pi.vercel.app/tools/viral-hook-generator</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ai-create-pi.vercel.app/tools/shorts-script-generator</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ai-create-pi.vercel.app/tools/seo-title-generator</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ai-create-pi.vercel.app/tools/video-idea-generator</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ai-create-pi.vercel.app/tools/caption-generator</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ai-create-pi.vercel.app/tools/faceless-video-script</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://ai-create-pi.vercel.app/privacy</loc>
     <lastmod>2026-05-16</lastmod>
     <changefreq>yearly</changefreq>
