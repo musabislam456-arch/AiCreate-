@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-
 Sitemap: https://ai-create-pi.vercel.app/sitemap.xml

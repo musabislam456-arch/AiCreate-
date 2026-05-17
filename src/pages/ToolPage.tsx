@@ -21,7 +21,6 @@ import { ModelSelector } from '../components/ModelSelector';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import AdsterraBanner from '../components/AdsterraBanner';
-import AdsterraBanner from '../components/AdsterraBanner';
 
 const LANGUAGES = [
   "English", "Spanish", "French", "German", "Hindi", 
