@@ -51,6 +51,10 @@ export function Navbar() {
             Advanced Features
           </button>
           
+          <Link to="/blog" className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors">
+            Creator Blog
+          </Link>
+          
           {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
