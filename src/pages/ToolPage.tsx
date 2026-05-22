@@ -790,8 +790,8 @@ export function ToolPage() {
       {(tool as any).seoContent && (
         <div className="mt-16 pt-12 border-t">
           <h2 className="text-3xl font-black mb-6">About {(tool as any).metaTitle ? (tool as any).metaTitle.split('|')[0].trim() : tool.title}</h2>
-          <div className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground text-lg leading-relaxed">
-            <p>{(tool as any).seoContent}</p>
+          <div className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground leading-relaxed">
+            <ReactMarkdown>{(tool as any).seoContent}</ReactMarkdown>
           </div>
         </div>
       )}

@@ -15,6 +15,10 @@ import { AiScriptGeneratorSEO } from './pages/seo/AiScriptGenerator';
 import { ThumbnailGeneratorSEO } from './pages/seo/ThumbnailGenerator';
 import { BlogList } from './pages/blog/BlogList';
 import { BlogPost } from './pages/blog/BlogPost';
+import { PrivacyPage } from './pages/PrivacyPage';
+import { TermsPage } from './pages/TermsPage';
+import { AboutPage } from './pages/AboutPage';
+import { ContactPage } from './pages/ContactPage';
 import './index.css';
 
 createRoot(document.getElementById('root')!).render(
@@ -32,6 +36,10 @@ createRoot(document.getElementById('root')!).render(
               <Route path="profile" element={<ProfilePage />} />
               <Route path="blog" element={<BlogList />} />
               <Route path="blog/:slug" element={<BlogPost />} />
+              <Route path="privacy" element={<PrivacyPage />} />
+              <Route path="terms" element={<TermsPage />} />
+              <Route path="about" element={<AboutPage />} />
+              <Route path="contact" element={<ContactPage />} />
               <Route path="youtube-title-generator" element={<YoutubeTitleGeneratorSEO />} />
               <Route path="ai-script-generator" element={<AiScriptGeneratorSEO />} />
               <Route path="thumbnail-generator" element={<ThumbnailGeneratorSEO />} />

@@ -5,25 +5,6 @@ import { Badge } from '../../components/ui/badge';
 import { Calendar, Clock, User, ArrowLeft } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
-// We simulate detailed content for SEO purposes. Real applications would pull this from a CMS.
-const generateMockMarkdown = (title: string, keyword: string) => `
-## Introduction
-In the rapidly adapting world of digital content creation, finding the right **${keyword}** is essential. The landscape has shifted dramatically, moving straight into an era where artificial intelligence manages everything from early ideation to final render. 
-
-## The Evolution of Creator Tools
-In 2026, relying purely on manual editing and ideation is a bottleneck. We’ve thoroughly tested the entire market of **AI creator platforms** and built strategies to utilize them effectively. If you want to increase your YouTube CTR or TikTok completion rate, integrating an **AI script generator** is not optional; it’s mandatory.
-
-### Why You Need AI in Your Workflow
-1. **Unprecedented Speed:** Create first drafts in seconds instead of hours.
-2. **Algorithm Familiarity:** Tools trained on billions of viral data points inherently understand NLP structures favored by search engines.
-3. **Effortless A/B Testing:** Generate 50 iterations of a thumbnail or title instantaneously.
-
-## Top Tips for Optimization
-Always ensure your output matches your brand voice. Using an **AI creator assistant** allows you to feed your previous high-performing scripts into the system, generating a custom tonal model specifically for your channel.
-
-*Remember: AI is your co-pilot, not your replacement. Inject your unique personality into the framework it builds.*
-`;
-
 export function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
   const post = BLOG_POSTS.find(p => p.slug === slug);
@@ -31,8 +12,6 @@ export function BlogPost() {
   if (!post) {
     return <Navigate to="/blog" replace />;
   }
-
-  const markdownContent = generateMockMarkdown(post.title, post.category.toLowerCase());
 
   // Generate dynamic Article JSON-LD schema
   const articleSchema = {
@@ -104,7 +83,7 @@ export function BlogPost() {
 
         {/* Content Body */}
         <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-bold prose-a:text-primary prose-img:rounded-xl">
-          <ReactMarkdown>{markdownContent}</ReactMarkdown>
+          <ReactMarkdown>{(post as any).content || ''}</ReactMarkdown>
         </div>
       </div>
     </article>
