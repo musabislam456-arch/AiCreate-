@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Navigate, useNavigate, Link } from 'react-router-dom';
+import { useParams, Navigate, useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { ADVANCED_TOOLS, CORE_TOOLS } from '../lib/tools-data';
 import { analyzeThumbnails, analyzeChannel, generateMetadata, generateContent, generateVisualPrompts, generateAdvancedScript, generateScriptPart, textToSpeech, AIModel } from '../lib/gemini';
 import { useAppStore } from '../lib/store';
@@ -51,9 +51,17 @@ export function AdvancedToolPage() {
   const { id } = useParams<{ id: string }>();
   const tool = ADVANCED_TOOLS.find(t => t.id === id);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   
   const { addHistory } = useAppStore();
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState(() => searchParams.get('prompt') || '');
+
+  useEffect(() => {
+    const promptParams = searchParams.get('prompt');
+    if (promptParams) {
+      setInput(promptParams);
+    }
+  }, [searchParams]);
   const [language, setLanguage] = useState(() => localStorage.getItem('creatorai_language') || 'English');
   const [selectedAIModel, setSelectedAIModel] = useState<AIModel>(() => (localStorage.getItem('creatorai_model') as AIModel) || 'Auto');
   const [answerMode, setAnswerMode] = useState<'short' | 'detailed'>(() => (localStorage.getItem('creatorai_answer_mode') as 'short' | 'detailed') || 'short');

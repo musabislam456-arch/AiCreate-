@@ -8,6 +8,7 @@ import { chatWithAssistant, AIModel, textToSpeech } from '../lib/gemini';
 import ReactMarkdown from 'react-markdown';
 import { MicButton } from './MicButton';
 import { cn } from '../lib/utils';
+import { Link, useNavigate } from 'react-router-dom';
 
 const LANGUAGES = [
   "English", "Spanish", "French", "German", "Hindi", 
@@ -135,7 +136,20 @@ export function FloatingChat() {
                         : 'bg-muted prose prose-sm dark:prose-invert rounded-tl-none'
                     )}
                   >
-                    {msg.role === 'user' ? msg.text : <ReactMarkdown>{msg.text}</ReactMarkdown>}
+                    {msg.role === 'user' ? msg.text : (
+                      <ReactMarkdown
+                        components={{
+                          a: ({ node, href, children, ...props }) => {
+                            if (href?.startsWith('/')) {
+                              return <Link to={href} className="text-primary underline hover:text-primary/80 font-semibold" {...props}>{children}</Link>;
+                            }
+                            return <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary/80 font-semibold" {...props}>{children}</a>;
+                          }
+                        }}
+                      >
+                        {msg.text}
+                      </ReactMarkdown>
+                    )}
                   </div>
                   {msg.role === 'assistant' && (
                     <div className="mt-1 flex items-center">

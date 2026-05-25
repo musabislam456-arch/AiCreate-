@@ -43,10 +43,10 @@ export function ContactPage() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground mb-6">
-                For media inquiries, enterprise scaling, or integration partnerships, please reach out directly to management.
+                For media inquiries, enterprise scaling, or integration partnerships, please reach out directly to the founder, Musab Umair.
               </p>
-              <a href="mailto:partners@creatorai.com">
-                <Button variant="outline" className="w-full">partners@creatorai.com</Button>
+              <a href="mailto:themusabumairs@gmail.com">
+                <Button variant="outline" className="w-full">themusabumairs@gmail.com</Button>
               </a>
             </CardContent>
           </Card>

@@ -75,20 +75,33 @@ export function AboutPage() {
           </Card>
         </div>
 
-        <h2 className="text-3xl font-black mb-6">Designed etc. by Musab Umair</h2>
-        <div className="prose prose-lg dark:prose-invert max-w-none space-y-6">
+        <h2 className="text-3xl font-black mb-6">Meet the Founder</h2>
+        <div className="prose prose-lg dark:prose-invert max-w-none space-y-6 mb-16">
           <p>
-            Musab Umair designed the system to stand on values of transparency, high technical design, and utility. By prioritizing clean layouts, fast load times, and semantic code architectures, CreatorAI serves both search engines and human creators optimally.
+            Hi, I'm <strong>Musab Umair</strong>. I'm a software developer and content strategist who got tired of seeing new creators get priced out of the modern workflow. 
+          </p>
+          <p>
+            I designed CreatorAI from the ground up to stand on values of transparency, high technical design, and utility. By prioritizing clean layouts, fast load times, and semantic code architectures, CreatorAI serves both search engines and human creators optimally. My goal isn't just to build another AI wrapper; it's to build a genuine, reliable workspace that you can use every single day.
           </p>
           <p>
             "Success in content creation shouldn't be limited by how many paid tools you can afford," states Musab. "It should be limited only by your imagination and consistency."
           </p>
           <p>
-            Whether you are working on your channels as a full-time business, study film in school, or run faceless agency channels, we invite you to make CreatorAI a core partner in your daily creative process.
+            If you ever need help, have a feature request, or just want to talk about the YouTube algorithm, you can reach me directly at <a href="mailto:themusabumairs@gmail.com">themusabumairs@gmail.com</a>.
           </p>
         </div>
 
-        <div className="mt-16 text-center">
+        <h2 className="text-3xl font-black mb-6">AI Transparency Disclosure</h2>
+        <div className="prose prose-lg dark:prose-invert max-w-none space-y-6">
+          <p>
+            We believe in honest technology. <strong>CreatorAI uses large language models (LLMs) and advanced machine learning APIs to provide intelligent suggestions.</strong> 
+          </p>
+          <p>
+            While our tools generate highly optimized scripts, titles, and hooks, AI can occasionally hallucinate or generate generic content. We strictly advise all creators to use our tools as <em>assistants</em>, not replacements for human creativity. Always review, fact-check, and inject your own authentic voice into any generated content before publishing.
+          </p>
+        </div>
+
+        <div className="mt-16 text-center border-t border-border/50 pt-10">
           <p className="text-muted-foreground mb-4">Want to reach out or suggest a custom tool addition?</p>
           <a href="mailto:support@creatorai.com" className="text-primary font-bold hover:underline">
             Contact Support &rarr;

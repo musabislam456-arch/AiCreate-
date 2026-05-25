@@ -304,6 +304,41 @@ export function Home() {
         </div>
       </section>
 
+      {/* Demo Video Section */}
+      <section className="py-24 bg-muted/10 border-y border-border/50">
+        <div className="container mx-auto px-4 max-w-5xl text-center">
+          <Badge variant="outline" className="mb-6">Watch Demo</Badge>
+          <h2 className="text-4xl md:text-5xl font-black mb-6 tracking-tight">
+            See CreatorAI in Action
+          </h2>
+          <p className="text-xl text-muted-foreground mb-12">
+            Watch how Musab built a viral content workflow in under 3 minutes using our tools.
+          </p>
+          
+          <div className="relative aspect-video rounded-2xl overflow-hidden bg-black/90 shadow-2xl border border-white/10 group cursor-pointer">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center shadow-[0_0_30px_rgba(14,165,233,0.5)]">
+                  <Play className="w-8 h-8 text-white ml-2" />
+                </div>
+              </div>
+            </div>
+            
+            {/* Fake UI Overlay to make it look like a real tutorial video thumbnail */}
+            <div className="absolute top-4 left-4 flex gap-2">
+              <Badge className="bg-black/50 text-white backdrop-blur border-none hover:bg-black/50">Tutorial</Badge>
+              <Badge className="bg-black/50 text-white backdrop-blur border-none hover:bg-black/50">2:45</Badge>
+            </div>
+            
+            <img 
+              src="https://images.unsplash.com/photo-1616469829581-73993eb8ceaf?q=80&w=2000&auto=format&fit=crop" 
+              alt="CreatorAI Dashboard Demo" 
+              className="w-full h-full object-cover opacity-40 mix-blend-overlay group-hover:opacity-50 transition-opacity" 
+            />
+          </div>
+        </div>
+      </section>
+
       {/* SEO Content Section */}
       <section className="py-24 container mx-auto px-4 border-t">
         <div className="max-w-5xl mx-auto prose prose-lg dark:prose-invert">
@@ -696,9 +731,9 @@ export function Home() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {(comments.length > 0
-            ? comments.slice(0, 2)
+            ? comments.slice(0, 4)
             : [
                 {
                   id: "fallback-1",
@@ -719,6 +754,26 @@ export function Home() {
                   createdAt: Date.now() - 86400000 * 5,
                   text: "I was spending hours agonizing over my shorts scripts to keep them under 60 seconds while still being engaging. This tool writes the perfect pacing in 5 seconds. Absolute lifesaver.",
                   userId: "user2",
+                },
+                {
+                  id: "fallback-3",
+                  userName: "Marcus T.",
+                  userAvatar:
+                    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150&auto=format&fit=crop",
+                  rating: 5,
+                  createdAt: Date.now() - 86400000 * 12,
+                  text: "I've tried every paid AI tool out there. CreatorAI does it better, faster, and actually understands semantic SEO. Plus, it's wild that it's completely free.",
+                  userId: "user3",
+                },
+                {
+                  id: "fallback-4",
+                  userName: "Elena R.",
+                  userAvatar:
+                    "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=150&auto=format&fit=crop",
+                  rating: 5,
+                  createdAt: Date.now() - 86400000 * 15,
+                  text: "The visual prompt generator for thumbnails alone is worth its weight in gold. I feed the outputs straight into Midjourney and it gives me insane click-worthy art.",
+                  userId: "user4",
                 },
               ]
           ).map((comment) => (

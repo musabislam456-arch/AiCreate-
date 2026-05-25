@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Navigate, useNavigate } from 'react-router-dom';
+import { useParams, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { CORE_TOOLS } from '../lib/tools-data';
 import { generateContent, generateContentWithSearch, textToSpeech, AIModel } from '../lib/gemini';
 import { useAppStore } from '../lib/store';
@@ -105,9 +105,18 @@ export function ToolPage() {
   const { id } = useParams<{ id: string }>();
   const tool = CORE_TOOLS.find(t => t.id === id);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   
   const { user, comments, addComment, addHistory } = useAppStore();
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState(() => searchParams.get('prompt') || '');
+
+  useEffect(() => {
+    const promptParams = searchParams.get('prompt');
+    if (promptParams) {
+      setInput(promptParams);
+    }
+  }, [searchParams]);
+
   const [extraInput1, setExtraInput1] = useState('');
   const [extraInput2, setExtraInput2] = useState('');
   const [language, setLanguage] = useState(() => localStorage.getItem('creatorai_language') || 'English');
