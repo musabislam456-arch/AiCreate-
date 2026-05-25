@@ -14,8 +14,8 @@ export function Footer() {
         <div className="flex flex-wrap items-center justify-center gap-4 text-sm font-medium text-muted-foreground my-4">
           <Link to="/about" className="hover:text-primary transition-colors">About Us</Link>
           <Link to="/contact" className="hover:text-primary transition-colors">Contact</Link>
-          <Link to="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
-          <Link to="/terms" className="hover:text-primary transition-colors">Terms of Service</Link>
+          <Link to="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+          <Link to="/terms-of-service" className="hover:text-primary transition-colors">Terms of Service</Link>
           <Link to="/blog" className="hover:text-primary transition-colors">Creator Blog</Link>
         </div>
 

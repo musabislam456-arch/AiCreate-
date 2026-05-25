@@ -37,7 +37,9 @@ createRoot(document.getElementById('root')!).render(
               <Route path="blog" element={<BlogList />} />
               <Route path="blog/:slug" element={<BlogPost />} />
               <Route path="privacy" element={<PrivacyPage />} />
+              <Route path="privacy-policy" element={<PrivacyPage />} />
               <Route path="terms" element={<TermsPage />} />
+              <Route path="terms-of-service" element={<TermsPage />} />
               <Route path="about" element={<AboutPage />} />
               <Route path="contact" element={<ContactPage />} />
               <Route path="youtube-title-generator" element={<YoutubeTitleGeneratorSEO />} />

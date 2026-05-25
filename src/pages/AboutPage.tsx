@@ -1,52 +1,98 @@
 import { SEO } from '../components/SEO';
 import { Card, CardContent } from '../components/ui/card';
+import { Badge } from '../components/ui/badge';
+import { Sparkles, Terminal, Shield, Award } from 'lucide-react';
 
 export function AboutPage() {
   return (
     <div className="flex flex-col min-h-screen pb-24">
       <SEO 
         title="About Us | CreatorAI"
-        description="Learn more about the team behind CreatorAI and our mission to empower creators with free AI tools."
+        description="Learn more about CreatorAI, a free AI-powered productivity suite for content creators, built by Musab Umair."
       />
       <div className="container mx-auto px-4 max-w-4xl py-20">
-        <h1 className="text-5xl font-black mb-8">About CreatorAI</h1>
+        <div className="text-center mb-16">
+          <Badge className="mb-4 text-sm px-4 py-1" variant="secondary">Meet the Brain Behind CreatorAI</Badge>
+          <h1 className="text-5xl md:text-6xl font-black mb-6 tracking-tight">About CreatorAI</h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Discover our mission and how we empower everyday creators to scale their content using advanced machine learning.
+          </p>
+        </div>
         
-        <div className="prose prose-lg dark:prose-invert max-w-none mb-12">
-          <p className="lead">
-            CreatorAI was built on a simple premise: advanced artificial intelligence shouldn't only belong to massive media companies and agencies with deep pockets.
+        <div className="prose prose-lg dark:prose-invert max-w-none mb-16 space-y-6">
+          <h2>Our Origin and Mission</h2>
+          <p className="text-lg leading-relaxed">
+            CreatorAI was founded on a simple premise: advanced artificial intelligence shouldn't only belong to massive media conglomerates or corporate agencies with multi-million dollar marketing budgets. 
           </p>
           <p>
-            The creator economy is shifting, and the barrier to producing high-quality content is increasing. We saw independent YouTubers, TikTokers, and digital artists struggling to keep up with the pacing and algorithmic demands of modern platforms. 
+            The modern digital landscape is shifting rapidly. In 2026, algorithmic pacing, search discovery, and retention physics dictate success. Independent YouTubers, TikTokers, scriptwriters, and digital publishers bear the heavy burden of constant production, often leading to creator burnout.
+          </p>
+          <p>
+            To address this challenge, CreatorAI was built by <strong>Musab Umair</strong>. Musab, an experienced software engineer and content ecosystem strategist, set out to develop a robust, free, and completely web-native intelligence suite. The goal was to provide high-quality AI-powered tools that help creators design, draft, optimize, and organize their creative workflow seamlessly.
           </p>
         </div>
 
-        <h2 className="text-3xl font-bold mb-6">Our Mission</h2>
-        <Card className="bg-primary/5 border-primary/20 mb-12">
-          <CardContent className="p-8">
-            <p className="text-xl italic font-medium m-0">
-              "To democratize access to powerful generative tools, allowing individual creators to compete on a planetary scale without burning out."
-            </p>
-          </CardContent>
-        </Card>
+        <h2 className="text-3xl font-black tracking-tight mb-8">Core Pillars of CreatorAI</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+          <Card className="border border-border/60 bg-muted/20">
+            <CardContent className="p-6 flex gap-4">
+              <Sparkles className="w-8 h-8 text-primary shrink-0" />
+              <div>
+                <h3 className="font-bold text-lg mb-2">Algorithmic Alignment</h3>
+                <p className="text-sm text-muted-foreground">Every prompt, input parser, and AI template on our platform is customized to optimize metrics like CTR (Click-Through Rate) and AVD (Average View Duration).</p>
+              </div>
+            </CardContent>
+          </Card>
 
-        <h2 className="text-3xl font-bold mb-6">Why We Built This</h2>
-        <div className="prose prose-lg dark:prose-invert max-w-none mb-12">
+          <Card className="border border-border/60 bg-muted/20">
+            <CardContent className="p-6 flex gap-4">
+              <Terminal className="w-8 h-8 text-primary shrink-0" />
+              <div>
+                <h3 className="font-bold text-lg mb-2">Open Ecosystem</h3>
+                <p className="text-sm text-muted-foreground">We believe in making high-quality tools accessible without subscription paywalls or hidden credits, giving every creator an equal chance to compete globally.</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border border-border/60 bg-muted/20">
+            <CardContent className="p-6 flex gap-4">
+              <Shield className="w-8 h-8 text-primary shrink-0" />
+              <div>
+                <h3 className="font-bold text-lg mb-2">E-E-A-T and Search Authority</h3>
+                <p className="text-sm text-muted-foreground">We build trustworthy utilities anchored in real-world SEO and semantic entities, conforming strictly to the highest search quality evaluator standards.</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border border-border/60 bg-muted/20">
+            <CardContent className="p-6 flex gap-4">
+              <Award className="w-8 h-8 text-primary shrink-0" />
+              <div>
+                <h3 className="font-bold text-lg mb-2">Built for Performance</h3>
+                <p className="text-sm text-muted-foreground">Super-fast client performance, offline-ready state retention, and robust server-side processing mean minimal lag between brainstorming and posting.</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <h2 className="text-3xl font-black mb-6">Designed etc. by Musab Umair</h2>
+        <div className="prose prose-lg dark:prose-invert max-w-none space-y-6">
           <p>
-            We are a team of former creators, video editors, and software engineers who experienced the burnout firsthand. Hours spent designing thumbnails, tweaking scripts to hit the 10-minute mark perfectly, and stressing over click-through rates.
+            Musab Umair designed the system to stand on values of transparency, high technical design, and utility. By prioritizing clean layouts, fast load times, and semantic code architectures, CreatorAI serves both search engines and human creators optimally.
           </p>
           <p>
-            When generative AI began to emerge, we quickly realized its potential. However, most AI tools were generic—good for writing corporate emails, but terrible at writing a high-retention YouTube hook. That's why we built CreatorAI specifically for the creator workflow. Every prompt, model, and tool on this site is fine-tuned to understand the metrics that matter: CTR, AVD, and algorithmic alignment.
+            "Success in content creation shouldn't be limited by how many paid tools you can afford," states Musab. "It should be limited only by your imagination and consistency."
+          </p>
+          <p>
+            Whether you are working on your channels as a full-time business, study film in school, or run faceless agency channels, we invite you to make CreatorAI a core partner in your daily creative process.
           </p>
         </div>
 
-        <h2 className="text-3xl font-bold mb-6">Built for the Future</h2>
-        <div className="prose prose-lg dark:prose-invert max-w-none">
-          <p>
-            As search engines evolve into Answer Engines and social feeds become entirely algorithm-driven, semantic structuring and massive A/B testing will become the standard. We are constantly updating CreatorAI to utilize the latest models so you never fall behind the algorithm.
-          </p>
-          <p>
-            Whether you are making your first short film for class or running a network of automation channels, CreatorAI is your back-office team.
-          </p>
+        <div className="mt-16 text-center">
+          <p className="text-muted-foreground mb-4">Want to reach out or suggest a custom tool addition?</p>
+          <a href="mailto:support@creatorai.com" className="text-primary font-bold hover:underline">
+            Contact Support &rarr;
+          </a>
         </div>
       </div>
     </div>

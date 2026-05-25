@@ -1,6 +1,6 @@
 import { useParams, Navigate, Link } from 'react-router-dom';
 import { SEO } from '../../components/SEO';
-import { BLOG_POSTS } from './BlogList';
+import { BLOG_POSTS } from './blogData';
 import { Badge } from '../../components/ui/badge';
 import { Calendar, Clock, User, ArrowLeft } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';

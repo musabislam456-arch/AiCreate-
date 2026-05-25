@@ -702,7 +702,7 @@ export function Home() {
             : [
                 {
                   id: "fallback-1",
-                  userName: "Mr. Beastly",
+                  userName: "Alex Vance",
                   userAvatar:
                     "https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=150&auto=format&fit=crop",
                   rating: 5,
