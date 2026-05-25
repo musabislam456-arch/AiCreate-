@@ -19,8 +19,10 @@ export function Footer() {
           <Link to="/blog" className="hover:text-primary transition-colors">Creator Blog</Link>
         </div>
 
-        <p className="text-xs text-muted-foreground mt-8">
-          &copy; {new Date().getFullYear()} CreatorAI Musab. All rights reserved.
+        <p className="text-xs text-muted-foreground mt-8 flex flex-col md:flex-row items-center justify-center gap-2">
+          <span>&copy; {new Date().getFullYear()} CreatorAI by Musab Umair. All rights reserved.</span>
+          <span className="hidden md:inline">•</span>
+          <span>Initial Release: May 25, 2026</span>
         </p>
       </div>
     </footer>

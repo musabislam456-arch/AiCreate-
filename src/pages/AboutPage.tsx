@@ -12,7 +12,7 @@ export function AboutPage() {
       />
       <div className="container mx-auto px-4 max-w-4xl py-20">
         <div className="text-center mb-16">
-          <Badge className="mb-4 text-sm px-4 py-1" variant="secondary">Meet the Brain Behind CreatorAI</Badge>
+          <Badge className="mb-4 text-sm px-4 py-1" variant="secondary">Established: May 25, 2026</Badge>
           <h1 className="text-5xl md:text-6xl font-black mb-6 tracking-tight">About CreatorAI</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Discover our mission and how we empower everyday creators to scale their content using advanced machine learning.

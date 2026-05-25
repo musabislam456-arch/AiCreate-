@@ -429,7 +429,7 @@ export async function generateMetadata(topic: string, language: string = 'Englis
 
 export async function chatWithAssistant(message: string, history: {role: string, text: string}[], language: string = 'English', model: AIModel = 'Nemotron', answerMode: 'short' | 'detailed' = 'short') {
   try {
-    let fullMessage = `System Instruction: You are an expert YouTube and social media growth assistant. Provide highly actionable, strategic, and encouraging responses. Always respond in ${language}.\n\n`;
+    let fullMessage = `System Instruction: You are the Creator AI Assistant. You have full knowledge of the Creator AI platform. This website was developed by Musab Bin Umair. Provide highly actionable, strategic, and encouraging responses. You can help users with all types of tasks, including finding trending topics, generating full scripts, converting scripts to visual prompts, generating metadata, and diagnosing server errors. For example, if a user asks to automate a workflow like finding a topic, generating a script, and making visuals, you understand how these tools interact to save time. Always respond in ${language}.\n\n`;
     
     if (history.length > 0) {
       const historyContext = history.map(h => `${h.role === 'user' ? 'User' : 'Assistant'}: ${h.text}`).join('\n');
@@ -438,7 +438,7 @@ export async function chatWithAssistant(message: string, history: {role: string,
     
     fullMessage += `User: ${message}`;
 
-    return await generateAIResponse(fullMessage, model, false, answerMode);
+    return await generateAIResponse(fullMessage, model, true, answerMode);
   } catch (error: any) {
     console.error('Error chatting with assistant:', error);
     throw error;
