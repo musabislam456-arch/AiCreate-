@@ -315,27 +315,20 @@ export function Home() {
             Watch how Musab built a viral content workflow in under 3 minutes using our tools.
           </p>
           
-          <div className="relative aspect-video rounded-2xl overflow-hidden bg-black/90 shadow-2xl border border-white/10 group cursor-pointer">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center shadow-[0_0_30px_rgba(14,165,233,0.5)]">
-                  <Play className="w-8 h-8 text-white ml-2" />
-                </div>
-              </div>
-            </div>
-            
-            {/* Fake UI Overlay to make it look like a real tutorial video thumbnail */}
-            <div className="absolute top-4 left-4 flex gap-2">
-              <Badge className="bg-black/50 text-white backdrop-blur border-none hover:bg-black/50">Tutorial</Badge>
-              <Badge className="bg-black/50 text-white backdrop-blur border-none hover:bg-black/50">2:45</Badge>
-            </div>
-            
-            <img 
-              src="https://images.unsplash.com/photo-1616469829581-73993eb8ceaf?q=80&w=2000&auto=format&fit=crop" 
-              alt="CreatorAI Dashboard Demo" 
-              className="w-full h-full object-cover opacity-40 mix-blend-overlay group-hover:opacity-50 transition-opacity" 
-            />
+          <div className="relative aspect-video rounded-2xl overflow-hidden bg-black/90 shadow-2xl border border-white/10">
+            <iframe
+              className="absolute inset-0 w-full h-full"
+              src="https://www.youtube.com/embed/eO9HwvZsrCQ?si=rOHp31UwW2b4ElC8"
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            ></iframe>
           </div>
+          <p className="mt-4 text-sm text-muted-foreground flex items-center justify-center gap-2">
+            <strong>Note:</strong> The default audio is in English. Use the YouTube player's gear icon ⚙️ and select Subtitles/CC &gt; Auto-translate to watch the tutorial in any language.
+          </p>
         </div>
       </section>
 
