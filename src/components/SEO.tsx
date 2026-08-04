@@ -16,7 +16,7 @@ export function SEO({
   keywords = 'ai tools, creator productivity, ai script generator, ai thumbnail, best ai tools for youtubers',
   ogType = 'website',
   ogImage = 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=1200&auto=format&fit=crop',
-  url = 'https://ai-create-pi.vercel.app',
+  url = 'https://aitoolz.site',
   schema,
 }: SEOProps) {
   const finalTitle = `${title} | CreatorAI Musab`;

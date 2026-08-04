@@ -48,7 +48,7 @@ export function PrivacyPage() {
           <p>This website may include links to third-party websites, plug-ins and applications. Clicking on those links or enabling those connections may allow third parties to collect or share data about you. We do not control these third-party websites and are not responsible for their privacy statements. We encourage you to read the privacy policy of every website you visit.</p>
           
           <h2>7. Contact Details</h2>
-          <p>If you have any questions about this privacy policy or our privacy practices, please contact us at <a href="mailto:support@creatorai.com" className="text-primary underline">support@creatorai.com</a>.</p>
+          <p>If you have any questions about this privacy policy or our privacy practices, please contact us at <a href="mailto:support@aitoolz.site" className="text-primary underline">support@aitoolz.site</a>.</p>
         </div>
       </div>
     </div>

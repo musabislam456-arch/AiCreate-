@@ -103,7 +103,7 @@ export function AboutPage() {
 
         <div className="mt-16 text-center border-t border-border/50 pt-10">
           <p className="text-muted-foreground mb-4">Want to reach out or suggest a custom tool addition?</p>
-          <a href="mailto:support@creatorai.com" className="text-primary font-bold hover:underline">
+          <a href="mailto:support@aitoolz.site" className="text-primary font-bold hover:underline">
             Contact Support &rarr;
           </a>
         </div>

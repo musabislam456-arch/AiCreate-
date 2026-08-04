@@ -29,14 +29,14 @@ export function BlogPost() {
       "name": "CreatorAI Musab",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://ai-create-pi.vercel.app/favicon.svg"
+        "url": "https://aitoolz.site/favicon.svg"
       }
     },
     "datePublished": post.date,
     "dateModified": post.date,
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `https://ai-create-pi.vercel.app/blog/${post.slug}`
+      "@id": `https://aitoolz.site/blog/${post.slug}`
     }
   };
 
@@ -47,7 +47,7 @@ export function BlogPost() {
         description={post.description}
         ogType="article"
         ogImage={post.image}
-        url={`https://ai-create-pi.vercel.app/blog/${post.slug}`}
+        url={`https://aitoolz.site/blog/${post.slug}`}
         schema={articleSchema}
       />
       

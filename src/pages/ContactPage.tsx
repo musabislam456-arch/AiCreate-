@@ -29,8 +29,8 @@ export function ContactPage() {
               <p className="text-muted-foreground mb-6">
                 Our support team is available 24/7 to help you with any issues related to the AI tools on our platform.
               </p>
-              <a href="mailto:support@creatorai.com">
-                <Button variant="outline" className="w-full">support@creatorai.com</Button>
+              <a href="mailto:support@aitoolz.site">
+                <Button variant="outline" className="w-full">support@aitoolz.site</Button>
               </a>
             </CardContent>
           </Card>

@@ -90,13 +90,13 @@ export function Home() {
             {
               "@type": "Organization",
               name: "CreatorAI Musab",
-              url: "https://ai-create-pi.vercel.app",
-              logo: "https://ai-create-pi.vercel.app/favicon.svg",
+              url: "https://aitoolz.site",
+              logo: "https://aitoolz.site/favicon.svg",
             },
             {
               "@type": "WebSite",
               name: "CreatorAI Musab",
-              url: "https://ai-create-pi.vercel.app",
+              url: "https://aitoolz.site",
               description: "AI Tools for Creators & Content Generation",
             },
             {

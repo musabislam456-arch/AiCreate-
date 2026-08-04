@@ -12,7 +12,7 @@ export function BlogList() {
         title="Creator Blog | AI Tools, Tips & Strategies for YouTubers"
         description="Read the latest strategies, guides, and tutorials on how to grow your YouTube channel and social media presence using the best AI creator tools."
         keywords="ai tools blog, youtube automation guides, how to use ai script writers, ai video editing tips, creatorai blog, generative engine optimization"
-        url="https://ai-create-pi.vercel.app/blog"
+        url="https://aitoolz.site/blog"
       />
 
       <section className="bg-muted/30 py-20 border-b">
